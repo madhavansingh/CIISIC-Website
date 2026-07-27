@@ -1,6 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 export interface UploadResult {
   url: string;
@@ -59,13 +60,22 @@ export class SupabaseStorageProvider implements StorageProvider {
     uploadType: "LOGO" | "DOCUMENT"
   ): Promise<UploadResult> {
     const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_ANON_KEY;
     const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "documents";
-    const isPublic = process.env.SUPABASE_STORAGE_BUCKET_IS_PUBLIC !== "false"; // default to true
+    const isPublic = process.env.SUPABASE_STORAGE_BUCKET_IS_PUBLIC !== "false";
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error("Supabase URL or API key is missing. Check your environment variables.");
     }
+
+    // Preserve max file size validation: max 2MB for LOGO, max 10MB for DOCUMENT
+    const maxSize = uploadType === "LOGO" ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (buffer.length > maxSize) {
+      throw new Error(`File size exceeds the limit of ${maxSize / (1024 * 1024)}MB`);
+    }
+
+    // Instantiate official Supabase server-side client
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const folderId = crypto.randomUUID();
     const fileId = crypto.randomUUID();
@@ -75,78 +85,46 @@ export class SupabaseStorageProvider implements StorageProvider {
     const subFolder = uploadType === "DOCUMENT" ? "challenges" : "logos";
     const filePath = `${subFolder}/${folderId}/${fileId}-${cleanName}`;
 
-    try {
-      const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucketName}/${filePath}`;
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout for Supabase Storage
-
-      const res = await fetch(uploadUrl, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${supabaseKey}`,
-          "apikey": supabaseKey,
-          "Content-Type": mimeType,
-        },
-        body: buffer,
-        signal: controller.signal,
+    // Upload using Supabase JS Storage SDK
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(filePath, buffer, {
+        contentType: mimeType,
+        duplex: "half",
       });
 
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        const errText = await res.text();
-        if (res.status === 404 || errText.includes("bucket not found") || errText.includes("Bucket not found")) {
-          throw new Error(`Supabase bucket '${bucketName}' does not exist. Please create it in the Supabase console.`);
-        }
-        throw new Error(`Supabase upload failed: ${errText}`);
+    if (uploadError) {
+      if (uploadError.message.includes("bucket not found") || uploadError.message.includes("Bucket not found")) {
+        throw new Error(`Supabase bucket '${bucketName}' does not exist. Please create it in the Supabase console.`);
       }
-
-      // If bucket is public, construct the direct public URL.
-      // If private, generate a signed URL (valid for 1 year = 31,536,000 seconds).
-      let fileUrl = "";
-      if (isPublic) {
-        fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${filePath}`;
-      } else {
-        const signUrl = `${supabaseUrl}/storage/v1/object/sign/${bucketName}/${filePath}`;
-        const signRes = await fetch(signUrl, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${supabaseKey}`,
-            "apikey": supabaseKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ expiresIn: 31536000 }), // 1 year expiry
-        });
-
-        if (!signRes.ok) {
-          const signErr = await signRes.text();
-          throw new Error(`Failed to generate signed URL for uploaded file: ${signErr}`);
-        }
-
-        const signData = await signRes.json() as { signedURL?: string; signedUrl?: string };
-        const relativeSignedUrl = signData.signedURL || signData.signedUrl;
-        if (!relativeSignedUrl) {
-          throw new Error("Supabase sign URL response did not contain signedURL");
-        }
-
-        fileUrl = relativeSignedUrl.startsWith("/")
-          ? `${supabaseUrl}${relativeSignedUrl}`
-          : relativeSignedUrl;
-      }
-
-      return {
-        url: fileUrl,
-        secureName: filePath, // use full path inside the bucket as secureName
-        path: filePath,
-        bucket: bucketName,
-      };
-    } catch (error: any) {
-      if (error.name === "AbortError") {
-        throw new Error("Supabase Storage upload timed out after 15 seconds.");
-      }
-      throw error;
+      throw new Error(`Supabase upload failed: ${uploadError.message}`);
     }
+
+    // Preserve returned public URL or Signed URL
+    let fileUrl = "";
+    if (isPublic) {
+      const { data: publicData } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+      fileUrl = publicData.publicUrl;
+    } else {
+      // Generate a signed URL valid for 1 year (31,536,000 seconds)
+      const { data: signedData, error: signError } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(filePath, 31536000);
+
+      if (signError) {
+        throw new Error(`Failed to generate signed URL for uploaded file: ${signError.message}`);
+      }
+      fileUrl = signedData.signedUrl;
+    }
+
+    return {
+      url: fileUrl,
+      secureName: filePath,
+      path: filePath,
+      bucket: bucketName,
+    };
   }
 }
 
