@@ -2,15 +2,20 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { POST as uploadFile } from "../src/app/api/upload/route";
 import { NextRequest } from "next/server";
 import { auth } from "../src/lib/auth";
-import fs from "fs/promises";
 
 vi.mock("../src/lib/auth", () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("fs/promises", () => ({
-  writeFile: vi.fn().mockResolvedValue(undefined),
-  mkdir: vi.fn().mockResolvedValue(undefined),
+vi.mock("../src/lib/storage", () => ({
+  storageProvider: {
+    uploadFile: vi.fn().mockResolvedValue({
+      url: "http://example.com/uploads/doc.pdf",
+      secureName: "doc.pdf",
+      path: "uploads/doc.pdf",
+      bucket: "local",
+    }),
+  },
 }));
 
 vi.mock("../src/lib/prisma", () => ({
@@ -134,6 +139,8 @@ describe("File Upload validations", () => {
     expect(res.status).toBe(201);
     const json = await res.json();
     expect(json.success).toBe(true);
-    expect(json.data.url).toContain("/uploads/");
+    expect(json.data.url).toBe("http://example.com/uploads/doc.pdf");
+    expect(json.data.path).toBe("uploads/doc.pdf");
+    expect(json.data.bucket).toBe("local");
   });
 });

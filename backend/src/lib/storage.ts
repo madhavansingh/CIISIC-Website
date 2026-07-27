@@ -5,6 +5,8 @@ import crypto from "crypto";
 export interface UploadResult {
   url: string;
   secureName: string;
+  path: string;
+  bucket: string;
 }
 
 export interface StorageProvider {
@@ -43,72 +45,112 @@ export class LocalStorageProvider implements StorageProvider {
     return {
       url: `/uploads/${secureName}`,
       secureName,
+      path: `uploads/${secureName}`,
+      bucket: "local",
     };
   }
 }
 
-export class CloudinaryStorageProvider implements StorageProvider {
+export class SupabaseStorageProvider implements StorageProvider {
   async uploadFile(
     buffer: Buffer,
     originalName: string,
     mimeType: string,
     uploadType: "LOGO" | "DOCUMENT"
   ): Promise<UploadResult> {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "unsigned_preset";
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "documents";
+    const isPublic = process.env.SUPABASE_STORAGE_BUCKET_IS_PUBLIC !== "false"; // default to true
 
-    if (!cloudName) {
-      console.warn("Cloudinary configuration missing, falling back to LocalStorageProvider");
-      const local = new LocalStorageProvider();
-      return local.uploadFile(buffer, originalName, mimeType, uploadType);
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase URL or API key is missing. Check your environment variables.");
     }
 
+    const folderId = crypto.randomUUID();
+    const fileId = crypto.randomUUID();
+    const cleanName = originalName.replace(/[^a-zA-Z0-9.-]/g, "_");
+    
+    // Path structure: challenges/{folderId}/{uuid}-{originalName} for DOCUMENT, or logos/{folderId}/{uuid}-{originalName} for LOGO
+    const subFolder = uploadType === "DOCUMENT" ? "challenges" : "logos";
+    const filePath = `${subFolder}/${folderId}/${fileId}-${cleanName}`;
+
     try {
-      const url = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
-      const base64Data = `data:${mimeType};base64,${buffer.toString("base64")}`;
+      const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucketName}/${filePath}`;
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout for Supabase Storage
 
-      const formData = new FormData();
-      formData.append("file", base64Data);
-
-      if (apiKey && apiSecret) {
-        const timestamp = Math.round(new Date().getTime() / 1000).toString();
-        const paramsToSign = `timestamp=${timestamp}${apiSecret}`;
-        const signature = crypto.createHash("sha1").update(paramsToSign).digest("hex");
-
-        formData.append("timestamp", timestamp);
-        formData.append("api_key", apiKey);
-        formData.append("signature", signature);
-      } else {
-        formData.append("upload_preset", uploadPreset);
-      }
-
-      const res = await fetch(url, {
+      const res = await fetch(uploadUrl, {
         method: "POST",
-        body: formData,
+        headers: {
+          "Authorization": `Bearer ${supabaseKey}`,
+          "apikey": supabaseKey,
+          "Content-Type": mimeType,
+        },
+        body: buffer,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const errText = await res.text();
-        throw new Error(`Cloudinary upload failed: ${errText}`);
+        if (res.status === 404 || errText.includes("bucket not found") || errText.includes("Bucket not found")) {
+          throw new Error(`Supabase bucket '${bucketName}' does not exist. Please create it in the Supabase console.`);
+        }
+        throw new Error(`Supabase upload failed: ${errText}`);
       }
 
-      const data = await res.json() as { secure_url: string; public_id: string };
+      // If bucket is public, construct the direct public URL.
+      // If private, generate a signed URL (valid for 1 year = 31,536,000 seconds).
+      let fileUrl = "";
+      if (isPublic) {
+        fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${filePath}`;
+      } else {
+        const signUrl = `${supabaseUrl}/storage/v1/object/sign/${bucketName}/${filePath}`;
+        const signRes = await fetch(signUrl, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${supabaseKey}`,
+            "apikey": supabaseKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ expiresIn: 31536000 }), // 1 year expiry
+        });
+
+        if (!signRes.ok) {
+          const signErr = await signRes.text();
+          throw new Error(`Failed to generate signed URL for uploaded file: ${signErr}`);
+        }
+
+        const signData = await signRes.json() as { signedURL?: string; signedUrl?: string };
+        const relativeSignedUrl = signData.signedURL || signData.signedUrl;
+        if (!relativeSignedUrl) {
+          throw new Error("Supabase sign URL response did not contain signedURL");
+        }
+
+        fileUrl = relativeSignedUrl.startsWith("/")
+          ? `${supabaseUrl}${relativeSignedUrl}`
+          : relativeSignedUrl;
+      }
+
       return {
-        url: data.secure_url,
-        secureName: data.public_id,
+        url: fileUrl,
+        secureName: filePath, // use full path inside the bucket as secureName
+        path: filePath,
+        bucket: bucketName,
       };
-    } catch (error) {
-      console.error("[CloudinaryStorageProvider] Error:", error);
-      const local = new LocalStorageProvider();
-      return local.uploadFile(buffer, originalName, mimeType, uploadType);
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        throw new Error("Supabase Storage upload timed out after 15 seconds.");
+      }
+      throw error;
     }
   }
 }
 
 // Current active storage provider configuration
-export const storageProvider: StorageProvider = process.env.CLOUDINARY_CLOUD_NAME 
-  ? new CloudinaryStorageProvider() 
+export const storageProvider: StorageProvider = process.env.SUPABASE_URL 
+  ? new SupabaseStorageProvider() 
   : new LocalStorageProvider();
-

@@ -105,7 +105,7 @@ export const IndustryLogin: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
+                    placeholder=""
                     className="block w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0056b3] focus:ring-2 focus:ring-[#0056b3]/10 transition-all bg-slate-50/50 hover:bg-slate-50 font-medium"
                   />
                 </div>
@@ -138,7 +138,7 @@ export const IndustryLogin: React.FC = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder=""
                     className="block w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0056b3] focus:ring-2 focus:ring-[#0056b3]/10 transition-all bg-slate-50/50 hover:bg-slate-50 font-medium"
                   />
                 </div>
@@ -175,9 +175,9 @@ export const IndustryLogin: React.FC = () => {
         </div>
 
         {/* Administrator Portal Redirect */}
-        <div className="text-center pt-2">
-          <p className="text-xs text-slate-500">
-            CII Platform Officer?{' '}
+        <div className="text-center pt-4">
+          <p className="text-xs text-slate-500 inline-flex items-center justify-center gap-1.5 flex-wrap">
+            <span>CII Platform Officer?</span>
             <Link 
               to="/admin/login" 
               className="font-bold text-[#0056b3] hover:underline inline-flex items-center gap-1"

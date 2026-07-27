@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { 
   Building2, PlusCircle, CheckCircle, Clock, AlertTriangle, FileText, 
   User, Mail, Phone, Globe, Briefcase, ChevronRight, FileCheck, X,
-  Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye
+  Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye, Download
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { sanitizeHTML, stripHTML } from '../lib/html';
 import { uploadFile } from '../lib/api';
+import { getOriginalFileName } from '../lib/file';
 
 export const IndustryDashboard: React.FC = () => {
   const { currentUser, submissions, addSubmission, showToast } = useApp();
@@ -355,7 +356,7 @@ export const IndustryDashboard: React.FC = () => {
   console.log('submissions:', submissions);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       
       {/* Header - Welcome back (NOT inside a card) */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 border-b border-slate-100 pb-6" id="dashboard-header">
@@ -384,7 +385,7 @@ export const IndustryDashboard: React.FC = () => {
       </div>
 
       {/* Corporate Profile Summary - Responsive Grid Layout */}
-      <div className="bg-gradient-to-r from-slate-50 to-blue-50/20 border border-slate-200/80 rounded-2xl p-6 sm:p-8 space-y-6" id="profile-summary">
+      <div className="bg-gradient-to-r from-slate-50 to-blue-50/20 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4" id="profile-summary">
         <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
           <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
             <Building2 className="h-4 w-4 text-[#0056b3]" /> Corporate Profile Summary
@@ -510,12 +511,32 @@ export const IndustryDashboard: React.FC = () => {
                           {sub.company.industrySector}
                         </span>
                         {sub.additional.fileAttachmentName && (
-                          <span 
-                            className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold px-2 py-0.5 rounded flex items-center gap-1 max-w-[180px] sm:max-w-[300px] truncate"
-                            title={sub.additional.fileAttachmentName}
-                          >
-                            <FileCheck className="h-3 w-3 shrink-0" /> {sub.additional.fileAttachmentName}
-                          </span>
+                          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold max-w-[180px] sm:max-w-[300px]">
+                            <span>📄</span>
+                            <a
+                              href={sub.additional.fileAttachmentName}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[#0056b3] hover:underline truncate"
+                              title={getOriginalFileName(sub.additional.fileAttachmentName)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                            >
+                              {getOriginalFileName(sub.additional.fileAttachmentName)}
+                            </a>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.open(sub.additional.fileAttachmentName, '_blank');
+                              }}
+                              className="p-0.5 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-700 transition-colors shrink-0"
+                              title="Download file"
+                            >
+                              <Download className="h-3 w-3" />
+                            </button>
+                          </div>
                         )}
                       </div>
 

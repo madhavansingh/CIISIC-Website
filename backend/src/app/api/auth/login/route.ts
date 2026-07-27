@@ -87,8 +87,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Role verification: Only CII_ADMIN, INDUSTRY_SPOC and SUPER_ADMIN allowed to authenticate
-    if (user.role !== "CII_ADMIN" && user.role !== "INDUSTRY_SPOC" && user.role !== "SUPER_ADMIN") {
+    // Role verification: Only CII_ADMIN, INDUSTRY_SPOC, SUPER_ADMIN and INSTITUTION_SPOC allowed to authenticate
+    if (
+      user.role !== "CII_ADMIN" &&
+      user.role !== "INDUSTRY_SPOC" &&
+      user.role !== "SUPER_ADMIN" &&
+      user.role !== "INSTITUTION_SPOC"
+    ) {
       return NextResponse.json(
         { success: false, message: "Insufficient permissions to access portals" },
         { status: 403, headers }

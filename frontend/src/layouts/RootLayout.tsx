@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, Building, ShieldCheck } from 'lucide-react';
+import { Menu, X, LogOut, Building, ShieldCheck, LayoutDashboard, PlusCircle } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { CiiLogo } from '../components/CiiLogo';
 import { Toast } from '../components/Toast';
@@ -97,22 +97,18 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         <div className="bg-[#002147] text-white py-1.5 px-4 text-xs font-medium border-b border-white/10 z-50">
           <div className="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Logged in as: <strong className="font-semibold text-slate-100">{currentUser.name}</strong></span>
-              <span className="text-slate-400">|</span>
-              <span className="flex items-center gap-1">
-                {currentUser.role === 'admin' ? (
-                  <>
-                    <ShieldCheck className="h-3 w-3 text-blue-400" />
-                    <span className="text-blue-400 font-semibold">CII Admin</span>
-                  </>
-                ) : (
-                  <>
-                    <Building className="h-3 w-3 text-slate-300" />
-                    <span>{currentUser.companyName}</span>
-                  </>
-                )}
-              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              {currentUser.role === 'admin' ? (
+                <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-blue-400">
+                  <ShieldCheck className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+                  CII Admin Portal
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-200 uppercase tracking-wider">
+                  <Building className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  {currentUser.companyName}
+                </span>
+              )}
             </div>
             <div className="relative profile-dropdown-container">
               <button
@@ -127,52 +123,49 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-1.5 w-52 bg-white text-slate-800 rounded-lg shadow-lg border border-slate-200 py-1 z-[100] origin-top-right text-xs divide-y divide-slate-100">
+                <div className="absolute right-0 mt-2 w-56 bg-white text-slate-800 rounded-xl shadow-xl border border-slate-200/80 py-1.5 z-[100] origin-top-right text-xs divide-y divide-slate-100 animate-fade-in">
                   {/* User Profile Header */}
-                  <div className="px-3 py-2 bg-slate-50/50 rounded-t-lg">
-                    <p className="font-extrabold text-slate-800 truncate text-[11px]">{currentUser.name}</p>
-                    <p className="text-[9px] text-[#002147] font-black uppercase tracking-wider mt-0.5">
+                  <div className="px-4 py-3 bg-slate-50/70">
+                    <p className="font-extrabold text-slate-900 truncate text-xs">{currentUser.name}</p>
+                    <p className="text-[9px] text-[#001a66] font-black uppercase tracking-wider mt-0.5">
                       {currentUser.role === 'admin' ? 'CII Admin' : 'Industry Partner'}
                     </p>
-                    <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{currentUser.email}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold truncate mt-1">{currentUser.email}</p>
                   </div>
                   
                   {/* Actions */}
-                  <div className="p-1 space-y-0.5">
+                  <div className="p-1.5 space-y-0.5">
                     <Link
                       to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-50 hover:text-[#002147] rounded transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 font-bold text-slate-700 hover:bg-slate-50 hover:text-[#001a66] rounded-lg transition-all text-xs"
                     >
-                      Dashboard
+                      <LayoutDashboard className="h-4 w-4 text-slate-400 shrink-0" />
+                      <span>Dashboard</span>
                     </Link>
                     {currentUser.role === 'industry' && (
                       <Link
                         to="/industry/submit"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-50 hover:text-[#002147] rounded transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 font-bold text-slate-700 hover:bg-slate-50 hover:text-[#001a66] rounded-lg transition-all text-xs"
                       >
-                        Submit Problem
+                        <PlusCircle className="h-4 w-4 text-slate-400 shrink-0" />
+                        <span>Submit Problem</span>
                       </Link>
-                    )}
-                    {currentUser.designation && (
-                      <div className="px-2.5 py-1.5 text-[10px] text-slate-400 font-medium border-t border-slate-50 mt-0.5">
-                        Designation: <span className="text-slate-600 font-bold">{currentUser.designation}</span>
-                      </div>
                     )}
                   </div>
                   
                   {/* Sign Out */}
-                  <div className="p-1">
+                  <div className="p-1.5">
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 font-bold text-red-600 hover:bg-red-50 hover:text-red-700 rounded transition-colors text-left cursor-pointer"
+                      className="w-full flex items-center gap-2 px-3 py-2 font-bold text-red-650 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all text-left cursor-pointer text-xs"
                     >
-                      <LogOut className="h-3.5 w-3.5" />
-                      Sign Out
+                      <LogOut className="h-4 w-4 text-red-500 shrink-0" />
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 </div>
@@ -203,78 +196,69 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center justify-center flex-grow mx-2 xl:mx-6 space-x-0.5 xl:space-x-1.5">
-              <button
-                onClick={() => handleNavClick('hero')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'hero' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => handleNavClick('about-ciisic')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'about-ciisic' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                About CIISIC
-              </button>
-              <button
-                onClick={() => handleNavClick('our-ecosystem')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'our-ecosystem' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                Our Ecosystem
-              </button>
-              <button
-                onClick={() => handleNavClick('how-it-works')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'how-it-works' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                How It Works
-              </button>
-              <button
-                onClick={() => handleNavClick('partner-institutions')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'partner-institutions' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                Institutions
-              </button>
-              <button
-                onClick={() => handleNavClick('get-involved')}
-                className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
-                  activeSection === 'get-involved' 
-                    ? 'text-[#001A66] bg-slate-100 font-bold' 
-                    : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
-                }`}
-              >
-                Get Involved
-              </button>
-
-              {currentUser && (
-                <Link
-                  to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
-                  className={`px-2.5 py-2 rounded-lg text-xs xl:text-sm font-bold whitespace-nowrap transition-all ${
-                    location.pathname.includes('/dashboard') 
-                      ? 'text-[#001A66] bg-slate-150 font-black shadow-sm' 
-                      : 'text-[#001A66] hover:text-[#0056b3] hover:bg-slate-50'
-                  }`}
-                >
-                  Dashboard
-                </Link>
+              {!currentUser && (
+                <>
+                  <button
+                    onClick={() => handleNavClick('hero')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'hero' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('about-ciisic')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'about-ciisic' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    About CIISIC
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('our-ecosystem')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'our-ecosystem' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    Our Ecosystem
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('how-it-works')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'how-it-works' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    How It Works
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('partner-institutions')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'partner-institutions' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    Institutions
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('get-involved')}
+                    className={`px-2 py-2 rounded-lg text-xs xl:text-sm font-semibold whitespace-nowrap transition-all ${
+                      activeSection === 'get-involved' 
+                        ? 'text-[#001A66] bg-slate-100 font-bold' 
+                        : 'text-slate-600 hover:text-[#001A66] hover:bg-slate-50/50'
+                    }`}
+                  >
+                    Get Involved
+                  </button>
+                </>
               )}
             </div>
 
@@ -298,9 +282,13 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               ) : (
                 <Link
                   to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
-                  className="px-4 py-2 bg-slate-100 text-[#002147] border border-[#002147]/10 hover:border-[#002147]/20 text-xs font-black rounded-lg hover:bg-slate-250 transition-all whitespace-nowrap"
+                  className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${
+                    location.pathname.includes('/dashboard') 
+                      ? 'text-white bg-[#001A66] border-[#001A66] shadow-sm' 
+                      : 'text-[#001A66] bg-slate-50 hover:bg-slate-100 border-slate-200'
+                  }`}
                 >
-                  Go to Dashboard
+                  Dashboard
                 </Link>
               )}
             </div>
@@ -323,58 +311,58 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         {mobileMenuOpen && (
           <div className="lg:hidden border-b border-slate-200 bg-white animate-fade-in">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <button
-                onClick={() => handleNavClick('hero')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'hero' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => handleNavClick('about-ciisic')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'about-ciisic' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                About CIISIC
-              </button>
-              <button
-                onClick={() => handleNavClick('our-ecosystem')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'our-ecosystem' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                Our Ecosystem
-              </button>
-              <button
-                onClick={() => handleNavClick('how-it-works')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'how-it-works' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                How It Works
-              </button>
-              <button
-                onClick={() => handleNavClick('partner-institutions')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'partner-institutions' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                Institutions
-              </button>
-              <button
-                onClick={() => handleNavClick('get-involved')}
-                className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
-                  activeSection === 'get-involved' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
-                }`}
-              >
-                Get Involved
-              </button>
+              {!currentUser ? (
+                <>
+                  <button
+                    onClick={() => handleNavClick('hero')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'hero' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('about-ciisic')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'about-ciisic' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    About CIISIC
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('our-ecosystem')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'our-ecosystem' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    Our Ecosystem
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('how-it-works')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'how-it-works' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    How It Works
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('partner-institutions')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'partner-institutions' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    Institutions
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('get-involved')}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium ${
+                      activeSection === 'get-involved' ? 'text-[#001A66] bg-slate-50 font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-[#001A66]'
+                    }`}
+                  >
+                    Get Involved
+                  </button>
 
-              <div className="border-t border-slate-100 my-2 pt-2 space-y-2 px-3">
-                {!currentUser ? (
-                  <>
+                  <div className="border-t border-slate-100 my-2 pt-2 space-y-2 px-3">
                     <Link
                       to="/industry/login"
                       onClick={() => setMobileMenuOpen(false)}
@@ -389,38 +377,38 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                     >
                       CII Admin
                     </Link>
-                  </>
-                ) : (
-                  <>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-base font-bold text-[#001A66] hover:bg-slate-50"
+                  >
+                    Dashboard
+                  </Link>
+                  {currentUser.role === 'industry' && (
                     <Link
-                      to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                      to="/industry/submit"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block w-full py-2.5 rounded-lg text-base font-bold bg-slate-100 text-[#002147] text-center border border-slate-200"
+                      className="block px-3 py-2 rounded-md text-base font-bold text-slate-700 hover:bg-slate-50"
                     >
-                      Go to Dashboard
+                      Submit Problem
                     </Link>
-                    {currentUser.role === 'industry' && (
-                      <Link
-                        to="/industry/submit"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block w-full py-2.5 rounded-lg text-base font-bold bg-slate-100 text-[#002147] text-center border border-slate-200"
-                      >
-                        Submit Problem
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        handleLogout();
-                      }}
-                      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-base font-bold bg-red-650 text-white hover:bg-red-700 transition-all cursor-pointer"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Sign Out
-                    </button>
-                  </>
-                )}
-              </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-base font-bold bg-red-600 text-white hover:bg-red-700 transition-all cursor-pointer mt-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

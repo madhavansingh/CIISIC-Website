@@ -90,7 +90,7 @@ export const AdminLogin: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@ciisic.org"
+                  placeholder=""
                   className="block w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0b2545] focus:ring-1 focus:ring-[#0b2545] transition-all bg-slate-50/50"
                 />
               </div>
@@ -121,7 +121,7 @@ export const AdminLogin: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder=""
                   className="block w-full pl-10 pr-10 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0b2545] focus:ring-1 focus:ring-[#0b2545] transition-all bg-slate-50/50"
                 />
                 <button
@@ -162,10 +162,13 @@ export const AdminLogin: React.FC = () => {
         </div>
 
         {/* Alternate link */}
-        <div className="text-center pt-2">
-          <p className="text-xs text-slate-500">
-            Are you a Corporate Representative?{' '}
-            <Link to="/industry/login" className="font-bold text-[#8f6d3b] hover:text-[#0b2545] underline flex items-center justify-center gap-1 mt-1">
+        <div className="text-center pt-4">
+          <p className="text-xs text-slate-500 inline-flex items-center justify-center gap-1.5 flex-wrap">
+            <span>Are you a Corporate Representative?</span>
+            <Link 
+              to="/industry/login" 
+              className="font-bold text-[#8f6d3b] hover:text-[#0b2545] underline inline-flex items-center gap-1"
+            >
               <Building2 className="h-3.5 w-3.5" /> Go to Industry Partner Portal
             </Link>
           </p>

@@ -8,6 +8,7 @@ import {
 import { useApp } from '../contexts/AppContext';
 import { sanitizeHTML } from '../lib/html';
 import { fetchChallengeById } from '../lib/api';
+import { getOriginalFileName } from '../lib/file';
 import { ProblemStatement } from '../types';
 
 export const SubmissionDetails: React.FC = () => {
@@ -393,52 +394,66 @@ export const SubmissionDetails: React.FC = () => {
                 </div>
               )}
 
-              {/* Mock Attachment download panel */}
+              {/* Attachment Card & Preview Section */}
               {submission.additional.fileAttachmentName ? (
                 <div className="space-y-4">
-                  <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-emerald-100 rounded-xl text-emerald-700">
-                        <FileText className="h-5 w-5" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 text-sm font-bold text-slate-800">
+                        <span className="text-base shrink-0">📄</span>
+                        <span className="truncate max-w-[200px] sm:max-w-md" title={getOriginalFileName(submission.additional.fileAttachmentName)}>
+                          {getOriginalFileName(submission.additional.fileAttachmentName)}
+                        </span>
                       </div>
-                      <div className="leading-tight min-w-0">
-                        <p className="font-bold text-slate-800 text-xs truncate max-w-[200px] sm:max-w-xs">{submission.additional.fileAttachmentName.split('/').pop()}</p>
-                        <p className="text-[10px] text-emerald-600 font-bold">PDF Attachment Verified</p>
-                      </div>
+                      <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Uploaded Successfully
+                      </p>
                     </div>
-                    <button
-                      onClick={() => {
-                        if (submission.additional.fileAttachmentName.startsWith('http') || submission.additional.fileAttachmentName.startsWith('/')) {
-                          window.open(submission.additional.fileAttachmentName, '_blank');
-                        } else {
-                          alert(`Initiating mock download: ${submission.additional.fileAttachmentName}`);
-                        }
-                      }}
-                      className="flex items-center gap-1 bg-white border border-slate-200 text-[#0b2545] hover:border-[#0b2545] px-3.5 py-1.5 rounded-lg text-xs font-black shadow-sm transition-colors cursor-pointer shrink-0"
-                    >
-                      <Download className="h-3.5 w-3.5" /> Download
-                    </button>
+                    
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => {
+                          const el = document.getElementById("supporting-document-preview");
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="bg-white border border-slate-200 text-[#0b2545] hover:border-slate-300 hover:text-slate-850 px-3.5 py-1.5 rounded-lg text-xs font-black shadow-sm transition-colors cursor-pointer"
+                      >
+                        Preview
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (submission.additional.fileAttachmentName.startsWith('http') || submission.additional.fileAttachmentName.startsWith('/')) {
+                            window.open(submission.additional.fileAttachmentName, '_blank');
+                          } else {
+                            alert(`Initiating mock download: ${submission.additional.fileAttachmentName}`);
+                          }
+                        }}
+                        className="bg-[#0b2545] text-white hover:bg-opacity-90 px-3.5 py-1.5 rounded-lg text-xs font-black shadow-sm transition-colors cursor-pointer"
+                      >
+                        Download
+                      </button>
+                      <a 
+                        href={submission.additional.fileAttachmentName} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="bg-white border border-slate-200 text-[#0b2545] hover:border-slate-350 hover:text-slate-850 px-3.5 py-1.5 rounded-lg text-xs font-black shadow-sm transition-all text-center inline-block"
+                      >
+                        Open in New Tab
+                      </a>
+                    </div>
                   </div>
                   
                   {/* Premium PDF preview iframe */}
                   {(submission.additional.fileAttachmentName.toLowerCase().endsWith('.pdf') || 
-                    submission.additional.fileAttachmentName.includes('/raw/upload') ||
-                    submission.additional.fileAttachmentName.includes('res.cloudinary.com')) && (
-                    <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shadow-inner">
-                      <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-xs font-bold text-slate-700">
-                        <span>Document Preview</span>
-                        <a 
-                          href={submission.additional.fileAttachmentName} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          className="text-[#8f6d3b] hover:underline"
-                        >
-                          Open in new tab
-                        </a>
+                    submission.additional.fileAttachmentName.includes('supabase.co')) && (
+                    <div id="supporting-document-preview" className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shadow-inner mt-4">
+                      <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-700">
+                        Supporting Document
                       </div>
                       <iframe
                         src={submission.additional.fileAttachmentName}
-                        className="w-full h-[450px] border-0"
+                        className="w-full h-[480px] border-0"
                         title="PDF Preview"
                       />
                     </div>

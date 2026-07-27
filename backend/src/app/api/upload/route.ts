@@ -13,11 +13,7 @@ const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
 const MAX_DOC_SIZE = 10 * 1024 * 1024; // 10MB
 
 const ALLOWED_LOGO_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const ALLOWED_DOC_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
+const ALLOWED_DOC_TYPES = ["application/pdf"];
 
 /**
  * POST /api/upload
@@ -58,7 +54,7 @@ export async function POST(req: NextRequest) {
         return badRequest("Document file size exceeds the 10MB limit");
       }
       if (!ALLOWED_DOC_TYPES.includes(mimeType)) {
-        return badRequest("Invalid document format. Allowed: PDF, DOC, DOCX");
+        return badRequest("Invalid document format. Allowed: PDF");
       }
     }
 
@@ -67,7 +63,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Delegate storage writing to storage provider
-    const { url: relativeUrl, secureName } = await storageProvider.uploadFile(
+    const { url: relativeUrl, secureName, path, bucket } = await storageProvider.uploadFile(
       buffer,
       file.name,
       mimeType,
@@ -98,10 +94,12 @@ export async function POST(req: NextRequest) {
 
     return created({
       url: absoluteUrl,
-      fileName: file.name,
-      secureName,
+      path,
+      bucket,
       size,
       mimeType,
+      fileName: file.name,
+      secureName,
     });
   } catch (err) {
     console.error("[POST /api/upload]", err);
