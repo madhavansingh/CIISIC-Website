@@ -2,6 +2,8 @@ import { prisma } from "./prisma";
 
 type AuditAction =
   | "USER_REGISTERED"
+  | "INDUSTRY_REGISTRATION_APPROVED"
+  | "INDUSTRY_REGISTRATION_REJECTED"
   | "USER_LOGIN"
   | "USER_ACTIVATED"
   | "USER_DEACTIVATED"

@@ -94,6 +94,10 @@ model IndustryProfile {
   createdAt   DateTime    @default(now())
   challenges  Challenge[]
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registrationStatus IndustryRegistrationStatus @default(PENDING)
+approvedAt        DateTime?
+approvedBy        String?
+rejectionReason   String?
 }
 
 model Institution {
@@ -236,6 +240,11 @@ enum Role {
   INSTITUTION_SPOC
   INDUSTRY_SPOC
   STUDENT
+}
+enum IndustryRegistrationStatus{
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum CellTheme {

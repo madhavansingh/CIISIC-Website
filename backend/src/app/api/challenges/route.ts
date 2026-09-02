@@ -215,6 +215,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (industryProfile.registrationStatus !== "APPROVED") {
+      return forbidden(
+        "Your industry registration must be approved before posting problem statements"
+      );
+    }
+
     const challenge = await prisma.challenge.create({
       data: {
         title: data.title,
