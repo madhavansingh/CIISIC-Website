@@ -108,18 +108,18 @@ export const ExcellenceCellsSection: React.FC = () => {
   ];
 
   return (
-    <section id="our-ecosystem" className="py-16 sm:py-24 bg-white scroll-mt-20">
+    <section id="our-ecosystem" className="py-16 sm:py-24 bg-[#faf7f0] border-t border-[#e8e4dc] scroll-mt-20">
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf4f0] text-[#063028] text-xs font-semibold tracking-wide">
             Excellence Cells
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#063028] tracking-tight leading-tight font-serif">
             Driving Innovation Through Specialized Excellence
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-stone-700 text-base sm:text-lg leading-relaxed">
             The CII Industry–Academia Excellence Initiative brings together specialized Excellence Cells hosted by leading partner institutions. Each Excellence Cell focuses on a specific domain, enabling industries to collaborate with the right academic expertise and student talent.
           </p>
         </div>
@@ -130,11 +130,11 @@ export const ExcellenceCellsSection: React.FC = () => {
             <div 
               key={cell.id}
               onClick={() => setSelectedCell(cell)}
-              className="group bg-slate-50 border border-slate-200 rounded-2xl sm:rounded-[24px] overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-lg hover:border-slate-350 transition-all duration-300 cursor-pointer"
+              className="group bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-md hover:border-stone-300 transition-all duration-300 cursor-pointer"
             >
               <div className="space-y-4">
                 {/* Cell Image Frame - natural height to prevent cropping infographic text */}
-                <div className="w-full overflow-hidden relative bg-white border-b border-slate-200/50">
+                <div className="w-full overflow-hidden relative bg-white border-b border-stone-100">
                   <img 
                     src={cell.image} 
                     alt={cell.name} 
@@ -144,21 +144,21 @@ export const ExcellenceCellsSection: React.FC = () => {
                 </div>
 
                 {/* Card Content - Partner label placed inline above title to prevent overlapping */}
-                <div className="px-5 sm:px-6 space-y-2">
-                  <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                <div className="px-5 sm:px-6 space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-stone-600 uppercase tracking-wider">
                     {cell.icon}
                     <span>{cell.partner}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-950 font-display group-hover:text-blue-700 transition-colors">
+                  <h3 className="text-xl font-bold text-[#063028] font-serif group-hover:text-[#c48825] transition-colors leading-snug">
                     {cell.name}
                   </h3>
-                  <p className="text-xs text-slate-550 leading-relaxed font-semibold">
+                  <p className="text-sm text-stone-700 leading-relaxed font-normal">
                     {cell.brief}
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 pt-0 mt-4 flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-900">
+              <div className="p-6 pt-2 mt-4 flex items-center gap-1.5 text-sm font-bold text-[#063028] group-hover:text-[#c48825] transition-colors">
                 <span>Explore Cell Details</span>
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
@@ -173,7 +173,7 @@ export const ExcellenceCellsSection: React.FC = () => {
               const el = document.getElementById('partner-institutions');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#002147] hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-sm sm:text-base font-bold shadow-xs transition-all duration-200 cursor-pointer"
           >
             Explore All CII Excellence Cells
           </button>
@@ -186,40 +186,40 @@ export const ExcellenceCellsSection: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop overlay */}
           <div 
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-[#04201a]/70 backdrop-blur-xs transition-opacity"
             onClick={() => setSelectedCell(null)}
           ></div>
 
-          {/* Centered Modal Card Container - scales height dynamically with content to avoid empty space */}
-          <div className="relative w-full max-w-5xl bg-white rounded-3xl border border-slate-200 shadow-2xl flex flex-col justify-between z-10 max-h-[90vh] overflow-hidden animate-fade-in">
+          {/* Centered Modal Card Container */}
+          <div className="relative w-full max-w-5xl bg-white rounded-3xl border border-stone-200 shadow-2xl flex flex-col justify-between z-10 max-h-[90vh] overflow-hidden">
             
             {/* Header Block - Sticky top */}
-            <div className="border-b border-slate-100 p-6 flex justify-between items-center bg-slate-50 shrink-0">
+            <div className="border-b border-stone-100 p-6 flex justify-between items-center bg-[#faf7f0] shrink-0">
               <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">
+                <span className="text-xs font-bold uppercase text-[#a6711c] tracking-wider">
                   Excellence Cell Profile
                 </span>
-                <h3 className="text-xl font-extrabold text-slate-900 font-display">
+                <h3 className="text-2xl font-bold text-[#063028] font-serif">
                   {selectedCell.name}
                 </h3>
-                <p className="text-xs text-slate-500 font-semibold">
+                <p className="text-sm text-stone-600 font-medium">
                   Partner Institution: {selectedCell.partner}
                 </p>
               </div>
               <button 
                 onClick={() => setSelectedCell(null)}
-                className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-full border border-slate-200 shadow-sm transition-colors cursor-pointer"
+                className="p-2.5 bg-white hover:bg-stone-100 text-stone-600 rounded-full border border-stone-200 shadow-xs transition-colors cursor-pointer"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Scrollable Content - Split into 2 Columns on larger screens */}
+            {/* Scrollable Content */}
             <div className="flex-grow p-6 sm:p-8 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 
-                {/* Left Column: Profile Image Banner (Sticky position on desktop scroll) */}
-                <div className="w-full rounded-2xl overflow-hidden border border-slate-250 bg-white shadow-sm md:sticky md:top-0">
+                {/* Left Column: Profile Image */}
+                <div className="w-full rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-xs md:sticky md:top-0">
                   <img 
                     src={selectedCell.image} 
                     alt={selectedCell.name} 
@@ -228,25 +228,25 @@ export const ExcellenceCellsSection: React.FC = () => {
                   />
                 </div>
 
-                {/* Right Column: Text descriptions and custom offerings */}
+                {/* Right Column: Text descriptions */}
                 <div className="space-y-6">
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">About the Cell</h4>
-                    <p className="text-sm text-slate-700 leading-relaxed font-semibold">
+                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">About the Cell</h4>
+                    <p className="text-base text-stone-800 leading-relaxed font-semibold">
                       {selectedCell.brief}
                     </p>
-                    <p className="text-sm text-slate-600 leading-relaxed">
+                    <p className="text-base text-stone-700 leading-relaxed">
                       {selectedCell.details}
                     </p>
                   </div>
 
-                  {/* Extended Details (e.g. AI in Business sub-offerings) */}
+                  {/* Extended Details */}
                   {selectedCell.extended && (
-                    <div className="space-y-6 pt-6 border-t border-slate-100">
+                    <div className="space-y-6 pt-6 border-t border-stone-100">
                       {selectedCell.extended.vision && (
-                        <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl space-y-2">
-                          <h4 className="text-xs font-black text-slate-450 uppercase tracking-widest">Our Vision</h4>
-                          <p className="text-sm text-slate-700 font-semibold leading-relaxed">
+                        <div className="bg-[#faf7f0] border border-stone-200/80 p-5 rounded-2xl space-y-2">
+                          <h4 className="text-sm font-bold text-stone-700 uppercase tracking-wider">Our Vision</h4>
+                          <p className="text-base text-stone-800 font-medium leading-relaxed">
                             {selectedCell.extended.vision}
                           </p>
                         </div>
@@ -254,18 +254,18 @@ export const ExcellenceCellsSection: React.FC = () => {
 
                       {selectedCell.extended.offerings && (
                         <div className="space-y-4">
-                          <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">What We Offer</h4>
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">What We Offer</h4>
                           <div className="grid grid-cols-1 gap-3">
                             {selectedCell.extended.offerings.map((offering, idx) => {
                               const [title, desc] = offering.split(': ');
                               return (
                                 <div key={idx} className="flex gap-3 items-start">
-                                  <span className="h-5 w-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                                  <span className="h-6 w-6 rounded-full bg-[#edf4f0] text-[#063028] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
                                     {idx + 1}
                                   </span>
-                                  <div className="text-sm">
-                                    <strong className="font-extrabold text-slate-900">{title}:</strong>
-                                    <span className="text-slate-600 ml-1 leading-relaxed">{desc}</span>
+                                  <div className="text-sm sm:text-base">
+                                    <strong className="font-bold text-[#063028]">{title}:</strong>
+                                    <span className="text-stone-700 ml-1 leading-relaxed">{desc}</span>
                                   </div>
                                 </div>
                               );
@@ -275,13 +275,13 @@ export const ExcellenceCellsSection: React.FC = () => {
                       )}
 
                       {selectedCell.extended.whyPartner && (
-                        <div className="space-y-4 pt-6 border-t border-slate-100">
-                          <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Why Partner with OGI?</h4>
+                        <div className="space-y-4 pt-6 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">Why Partner with OGI?</h4>
                           <ul className="grid grid-cols-1 gap-3 pl-1">
                             {selectedCell.extended.whyPartner.map((item, idx) => (
                               <li key={idx} className="flex gap-2.5 items-start">
-                                <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span className="text-xs text-slate-600 font-semibold leading-normal">{item}</span>
+                                <CheckCircle2 className="h-5 w-5 text-[#063028] shrink-0 mt-0.5" />
+                                <span className="text-sm sm:text-base text-stone-700 font-medium leading-normal">{item}</span>
                               </li>
                             ))}
                           </ul>
@@ -295,10 +295,10 @@ export const ExcellenceCellsSection: React.FC = () => {
             </div>
 
             {/* Footer Actions */}
-            <div className="border-t border-slate-100 p-6 bg-slate-50 flex justify-end gap-3">
+            <div className="border-t border-stone-100 p-6 bg-[#faf7f0] flex justify-end gap-3">
               <button
                 onClick={() => setSelectedCell(null)}
-                className="px-4 py-2.5 border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600"
+                className="px-5 py-3 border border-stone-300 hover:bg-stone-100 rounded-xl text-sm font-bold text-stone-700 cursor-pointer"
               >
                 Close Profile
               </button>
@@ -308,7 +308,7 @@ export const ExcellenceCellsSection: React.FC = () => {
                   const el = document.getElementById('get-involved');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="px-5 py-2.5 bg-[#002147] hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                className="px-6 py-3 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-sm font-bold shadow-xs transition-all cursor-pointer"
               >
                 Connect &amp; Collaborate
               </button>

@@ -11,18 +11,18 @@ export const GetInvolvedSection: React.FC = () => {
   };
 
   return (
-    <section id="get-involved" className="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/60 scroll-mt-20">
+    <section id="get-involved" className="py-16 sm:py-24 bg-[#faf8f4] border-t border-[#e8e4dc] scroll-mt-20">
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Header Block */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf4f0] text-[#063028] text-xs font-semibold tracking-wide">
             Get Involved
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-tight font-display">
+          <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-[#063028] tracking-tight leading-tight font-serif">
             Ready to Solve the Next Industry Challenge?
           </h2>
-          <p className="text-slate-650 text-sm sm:text-base leading-relaxed">
+          <p className="text-stone-700 text-base sm:text-lg leading-relaxed">
             Whether you're an industry partner looking to solve business challenges or an institution preparing future innovators, join the CII Industry–Academia Excellence Initiative driving real-world innovation through collaboration.
           </p>
         </div>
@@ -31,39 +31,39 @@ export const GetInvolvedSection: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           
           {/* Card 1: Become an Industry Partner */}
-          <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-[28px] p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-xl hover:border-blue-500 transition-all duration-300 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-blue-600"></div>
+          <div className="bg-white border border-stone-200/90 rounded-2xl sm:rounded-[24px] p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-stone-300 transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#063028]"></div>
             
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shrink-0">
-                  <Building2 className="h-6 w-6" />
+                <div className="p-3.5 bg-[#edf4f0] text-[#063028] rounded-2xl group-hover:bg-[#063028] group-hover:text-white transition-all duration-300 shrink-0">
+                  <Building2 className="h-7 w-7" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black uppercase text-blue-600 tracking-widest block">
+                  <span className="text-xs font-bold uppercase text-[#063028] tracking-wider block">
                     Connect &amp; Innovate
                   </span>
-                  <h3 className="text-xl font-extrabold text-slate-950 font-display">
+                  <h3 className="text-2xl font-bold text-[#063028] font-serif">
                     Become an Industry Partner
                   </h3>
                 </div>
               </div>
 
-              <p className="text-sm text-slate-600 leading-relaxed font-semibold">
+              <p className="text-base text-stone-700 leading-relaxed font-normal">
                 Submit real business challenges, get matched with expert faculty-led student teams, and co-develop practical, research-backed solutions.
               </p>
 
               <ul className="space-y-3 pt-2">
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#edf4f0] text-[#063028] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Verified faculty &amp; student team matching</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#edf4f0] text-[#063028] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Structured challenge submission process</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#edf4f0] text-[#063028] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Milestone tracking &amp; solution reports</span>
                 </li>
               </ul>
@@ -72,47 +72,47 @@ export const GetInvolvedSection: React.FC = () => {
             <div className="pt-8">
               <Link
                 to="/industry/login"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-[#002147] hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-colors shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-[#063028] hover:bg-[#04201a] text-white text-sm sm:text-base font-bold uppercase tracking-wider rounded-xl transition-colors shadow-xs"
               >
-                Enter Industry Portal <ArrowRight className="h-4 w-4" />
+                Enter Industry Portal <ArrowRight className="h-4.5 w-4.5" />
               </Link>
             </div>
           </div>
 
           {/* Card 2: CII Platform Admin */}
-          <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-[28px] p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-xl hover:border-amber-500 transition-all duration-300 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-amber-500"></div>
+          <div className="bg-white border border-stone-200/90 rounded-2xl sm:rounded-[24px] p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-stone-300 transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#c48825]"></div>
             
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shrink-0">
-                  <ShieldCheck className="h-6 w-6" />
+                <div className="p-3.5 bg-[#fef6e7] text-[#c48825] rounded-2xl group-hover:bg-[#c48825] group-hover:text-white transition-all duration-300 shrink-0">
+                  <ShieldCheck className="h-7 w-7" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black uppercase text-amber-600 tracking-widest block">
+                  <span className="text-xs font-bold uppercase text-[#a6711c] tracking-wider block">
                     Ecosystem Control
                   </span>
-                  <h3 className="text-xl font-extrabold text-slate-950 font-display">
+                  <h3 className="text-2xl font-bold text-[#063028] font-serif">
                     CII Platform Admin
                   </h3>
                 </div>
               </div>
 
-              <p className="text-sm text-slate-600 leading-relaxed font-semibold">
+              <p className="text-base text-stone-700 leading-relaxed font-normal">
                 Review submitted industry challenges, manage partner institutions and Excellence Cells, and coordinate ecosystem engagements.
               </p>
 
               <ul className="space-y-3 pt-2">
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Centralized challenge review &amp; routing</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Multi-institution coordination dashboard</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs text-slate-600 font-semibold">
-                  <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
+                <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
+                  <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
                   <span>Secure access to platform insights</span>
                 </li>
               </ul>
@@ -121,9 +121,9 @@ export const GetInvolvedSection: React.FC = () => {
             <div className="pt-8">
               <Link
                 to="/admin/login"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-slate-900 hover:bg-slate-950 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-colors shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-[#c48825] hover:bg-[#b0781e] text-white text-sm sm:text-base font-bold uppercase tracking-wider rounded-xl transition-colors shadow-xs"
               >
-                Access Admin Portal <ArrowRight className="h-4 w-4" />
+                Access Admin Portal <ArrowRight className="h-4.5 w-4.5" />
               </Link>
             </div>
           </div>
@@ -134,13 +134,13 @@ export const GetInvolvedSection: React.FC = () => {
         <div className="flex flex-wrap justify-center items-center gap-4 pt-12">
           <button
             onClick={() => handleScrollTo('partner-institutions')}
-            className="px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            className="px-6 py-3.5 bg-white border border-stone-300 hover:bg-[#faf8f4] text-[#063028] text-sm sm:text-base font-bold rounded-xl transition-colors cursor-pointer"
           >
             Become a Partner Institution
           </button>
           <button
             onClick={() => handleScrollTo('about-ciisic')}
-            className="px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            className="px-6 py-3.5 bg-white border border-stone-300 hover:bg-[#faf8f4] text-[#063028] text-sm sm:text-base font-bold rounded-xl transition-colors cursor-pointer"
           >
             Explore CIISIC
           </button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Building2, PlusCircle, CheckCircle, Clock, AlertTriangle, FileText, 
-  User, Mail, Phone, Globe, Briefcase, ChevronRight, FileCheck, X,
+  Globe, ChevronRight, FileCheck, X,
   Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye, Download
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
@@ -88,20 +88,20 @@ export const IndustryDashboard: React.FC = () => {
     switch (status) {
       case 'Approved':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-600" /> Approved
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <CheckCircle className="h-4 w-4 text-emerald-600" /> Approved
           </span>
         );
       case 'Rejected':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
-            <AlertTriangle className="h-3.5 w-3.5 text-red-600" /> Rejected
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-800 border border-red-200">
+            <AlertTriangle className="h-4 w-4 text-red-600" /> Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <Clock className="h-3.5 w-3.5 text-amber-500 animate-pulse" /> Pending Approval
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="h-4 w-4 text-amber-600 animate-pulse" /> Pending Review
           </span>
         );
     }
@@ -168,7 +168,7 @@ export const IndustryDashboard: React.FC = () => {
 
     // Valid file
     setErrors(prev => {
-      const { attachedFile, ...rest } = prev;
+      const { attachedFile: _, ...rest } = prev;
       return rest;
     });
     setAttachedFile(file);
@@ -178,7 +178,7 @@ export const IndustryDashboard: React.FC = () => {
   const removeAttachedFile = () => {
     setAttachedFile(null);
     setErrors(prev => {
-      const { attachedFile, ...rest } = prev;
+      const { attachedFile: _, ...rest } = prev;
       return rest;
     });
   };
@@ -270,7 +270,7 @@ export const IndustryDashboard: React.FC = () => {
       showToast('Form validated! Please review your submission parameters.', 'success');
       scrollToForm();
     } else {
-      showToast('Validation failed. Please correct the inline errors.', 'error');
+      showToast('Validation failed. Please correct the highlighted errors.', 'error');
     }
   };
 
@@ -301,7 +301,7 @@ export const IndustryDashboard: React.FC = () => {
           businessChallenge: description,
           existingProcess: 'Handled via manual inspections and fixed calendar schedules.',
           expectedOutcome: expectedOutcomes,
-          projectObjectives: `1. Analyze parameters for ${title}.\n2. Build a highly reliable engineering prototype.\n3. Verify operational safety against standard metrics.`
+          projectObjectives: `1. Analyze parameters for ${title}.\n2. Build a reliable engineering prototype.\n3. Verify operational safety against standard metrics.`
         },
         technical: {
           requiredTechnologies: ['AI Frameworks', 'Data Pipelines', 'Enterprise Edge Integrations'],
@@ -322,13 +322,12 @@ export const IndustryDashboard: React.FC = () => {
       setCurrentView('success');
       showToast('Your problem statement has been submitted successfully.', 'success');
       scrollToForm();
-    } catch (err) {
-      showToast('Failed to final-submit the problem statement.', 'error');
+    } catch {
+      showToast('Failed to submit the problem statement. Please try again.', 'error');
     }
   };
 
   const handleReturnToDashboard = () => {
-    // Clear custom form fields except user details
     setTitle('');
     setDescription('');
     setExpectedOutcomes('');
@@ -340,7 +339,6 @@ export const IndustryDashboard: React.FC = () => {
   };
 
   const handleSubmitAnother = () => {
-    // Keep user details but clear statement details
     setTitle('');
     setDescription('');
     setExpectedOutcomes('');
@@ -352,21 +350,19 @@ export const IndustryDashboard: React.FC = () => {
     scrollToForm();
   };
 
-  console.log('currentUser:', currentUser);
-  console.log('submissions:', submissions);
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
       
-      {/* Header - Welcome back (NOT inside a card) */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 border-b border-slate-100 pb-6" id="dashboard-header">
-        <div className="space-y-2.5 min-w-0 flex-1">
-          <div className="space-y-0.5">
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Welcome Back,</p>
-            <h1 className="text-3xl sm:text-4xl font-black text-[#002147] tracking-tight font-display flex items-center gap-2 flex-wrap break-words break-all">
-              <span>{currentUser?.name || 'Industry Partner'}</span>
-            </h1>
-          </div>
+      {/* Header - Welcome back */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 border-b border-stone-200 pb-6" id="dashboard-header">
+        <div className="space-y-1 min-w-0 flex-1">
+          <p className="text-xs font-bold text-[#c48825] uppercase tracking-wider">Industry Partner Portal</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#063028] tracking-tight font-serif flex items-center gap-2 flex-wrap">
+            <span>Welcome, {currentUser?.name || 'Industry Partner'}</span>
+          </h1>
+          <p className="text-base text-stone-600 leading-relaxed">
+            Manage your filed problem statements, track CII review feedback, and initiate new university research collaborations.
+          </p>
         </div>
 
         {/* Primary Action Button */}
@@ -376,59 +372,59 @@ export const IndustryDashboard: React.FC = () => {
               setCurrentView('form');
               scrollToForm();
             }}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#002147] hover:bg-[#0056b3] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer shrink-0"
             id="primary-action-btn"
           >
-            <PlusCircle className="h-4 w-4" /> Submit Problem Statement
+            <PlusCircle className="h-4.5 w-4.5" /> Submit Problem Statement
           </button>
         )}
       </div>
 
       {/* Corporate Profile Summary - Responsive Grid Layout */}
-      <div className="bg-gradient-to-r from-slate-50 to-blue-50/20 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4" id="profile-summary">
-        <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <Building2 className="h-4 w-4 text-[#0056b3]" /> Corporate Profile Summary
+      <div className="bg-white border border-stone-200/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4" id="profile-summary">
+        <div className="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h3 className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+            <Building2 className="h-4.5 w-4.5 text-[#063028]" /> Corporate Profile Overview
           </h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-sm">
           {/* Company Name */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Company Name</span>
-            <p className="font-bold text-[#002147] text-base break-words break-all">{currentUser?.companyName || 'Tata Motors Ltd'}</p>
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Company Name</span>
+            <p className="font-bold text-[#063028] text-base">{currentUser?.companyName || 'Tata Motors Ltd'}</p>
           </div>
 
           {/* Industry Category */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Industry Category</span>
-            <p className="font-bold text-[#002147] text-base break-words break-all">Automotive & Manufacturing</p>
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Industry Category</span>
+            <p className="font-bold text-[#063028] text-base">Automotive &amp; Manufacturing</p>
           </div>
 
           {/* SPOC Name */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">SPOC Name</span>
-            <p className="font-bold text-[#002147] text-base break-words break-all">{currentUser?.name || 'Rajesh Sharma'}</p>
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Representative / SPOC</span>
+            <p className="font-bold text-[#063028] text-base">{currentUser?.name || 'Rajesh Sharma'}</p>
           </div>
 
           {/* Official Email */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Official Email</span>
-            <p className="font-semibold text-slate-700 truncate break-all">{currentUser?.email || 'industry@cii.in'}</p>
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Official Email</span>
+            <p className="font-medium text-stone-700 text-base truncate">{currentUser?.email || 'industry@cii.in'}</p>
           </div>
 
           {/* Phone Number */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Phone Number</span>
-            <p className="font-semibold text-slate-700 break-words break-all">+91 98765 43210</p>
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Phone Number</span>
+            <p className="font-medium text-stone-700 text-base">+91 98765 43210</p>
           </div>
 
           {/* Website */}
-          <div className="space-y-0.5 min-w-0">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Website</span>
-            <p className="font-semibold text-slate-700 truncate">
-              <a href="https://www.tatamotors.com" target="_blank" rel="noopener noreferrer" className="text-[#0056b3] hover:underline flex items-center gap-1 break-all">
-                www.tatamotors.com <Globe className="h-3 w-3 inline shrink-0" />
+          <div className="space-y-1 min-w-0">
+            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Website</span>
+            <p className="font-medium text-base">
+              <a href="https://www.tatamotors.com" target="_blank" rel="noopener noreferrer" className="text-[#c48825] hover:text-[#a6711c] hover:underline flex items-center gap-1">
+                www.tatamotors.com <Globe className="h-4 w-4 inline shrink-0" />
               </a>
             </p>
           </div>
@@ -439,85 +435,85 @@ export const IndustryDashboard: React.FC = () => {
       {currentView === 'dashboard' && (
         <div className="space-y-6 animate-fade-in" id="dashboard-ledger">
           {/* Submissions Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-none">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Total Submissions</div>
-              <div className="text-2xl font-black text-[#002147] mt-0.5 font-display">{stats.total}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Submissions</div>
+              <div className="text-3xl font-extrabold text-[#063028] mt-1 font-serif">{stats.total}</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-none">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Approved</div>
-              <div className="text-2xl font-black text-emerald-600 mt-0.5 font-display">{stats.approved}</div>
+            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Approved for Distribution</div>
+              <div className="text-3xl font-extrabold text-emerald-700 mt-1 font-serif">{stats.approved}</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-none">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Rejected</div>
-              <div className="text-2xl font-black text-red-600 mt-0.5 font-display">{stats.rejected}</div>
+            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Pending Review</div>
+              <div className="text-3xl font-extrabold text-amber-700 mt-1 font-serif">{stats.pending}</div>
             </div>
           </div>
 
           {/* Table/List Header */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-bold text-[#002147] font-display">
-                Submitted Proposals
+              <h2 className="text-2xl font-bold text-[#063028] font-serif">
+                Submitted Problem Statements
               </h2>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-sm font-semibold text-stone-500">
                 Showing {mySubmissions.length} Statements
               </span>
             </div>
 
             {mySubmissions.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-4">
-                <FileText className="h-12 w-12 text-slate-300 mx-auto" />
+              <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center space-y-4">
+                <FileText className="h-12 w-12 text-stone-300 mx-auto" />
                 <div className="space-y-1">
-                  <p className="font-bold text-slate-700 text-sm">No Problem Statements Filed Yet</p>
-                  <p className="text-xs text-slate-400 max-w-sm mx-auto">Get started by creating your first problem statement to receive solutions from engineering institutions.</p>
+                  <p className="font-bold text-stone-800 text-base">No Problem Statements Filed Yet</p>
+                  <p className="text-sm text-stone-600 max-w-sm mx-auto">Get started by creating your first problem statement to receive solutions from engineering institutions.</p>
                 </div>
                 <button
                   onClick={() => setCurrentView('form')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-[#002147] rounded-xl hover:bg-[#0056b3] transition-all cursor-pointer shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-[#063028] rounded-xl hover:bg-[#04201a] transition-all cursor-pointer shadow-sm"
                 >
-                  <PlusCircle className="h-4 w-4" /> Propose First Statement
+                  <PlusCircle className="h-4.5 w-4.5" /> Submit First Statement
                 </button>
               </div>
             ) : (
               <div className="space-y-4">
                 {mySubmissions.map((sub) => (
-                  <div key={sub.id} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-none space-y-4 hover:border-slate-300 transition-all duration-150">
+                  <div key={sub.id} className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-4 hover:border-stone-300 transition-all">
                     <div className="flex justify-between items-start gap-4">
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">REF ID: {sub.id}</span>
-                          <span className="text-xs text-slate-400 font-medium">{new Date(sub.submittedDate).toLocaleDateString()}</span>
+                          <span className="text-xs font-mono font-bold text-[#063028] bg-[#edf4f0] border border-[#063028]/20 px-2 py-0.5 rounded">REF ID: {sub.id}</span>
+                          <span className="text-xs text-stone-500 font-medium">Filed on {new Date(sub.submittedDate).toLocaleDateString()}</span>
                         </div>
-                        <h3 className="text-base font-bold text-[#002147] hover:text-[#0056b3] transition-colors mt-1 break-words break-all">
+                        <h3 className="text-lg font-bold text-[#063028] hover:text-[#c48825] transition-colors mt-1">
                           {sub.details.title}
                         </h3>
                       </div>
                       <div className="shrink-0">{getStatusBadge(sub.status)}</div>
                     </div>
 
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed break-words break-all">
+                    <p className="text-sm text-stone-600 line-clamp-2 leading-relaxed">
                       {stripHTML(sub.details.description)}
                     </p>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-[10px] bg-slate-50 border border-slate-200/60 text-slate-500 font-semibold px-2 py-0.5 rounded font-mono">
+                        <span className="text-xs bg-stone-100 border border-stone-200 text-stone-700 font-semibold px-2.5 py-1 rounded">
                           {sub.technical.difficultyLevel} Tier
                         </span>
-                        <span className="text-[10px] bg-[#f0f5fa] text-[#0056b3] font-semibold px-2 py-0.5 rounded">
+                        <span className="text-xs bg-[#edf4f0] text-[#063028] font-bold px-2.5 py-1 rounded">
                           {sub.company.industrySector}
                         </span>
                         {sub.additional.fileAttachmentName && (
-                          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold max-w-[180px] sm:max-w-[300px]">
+                          <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-200 text-stone-700 px-2.5 py-1 rounded text-xs font-bold max-w-[220px] sm:max-w-[320px]">
                             <span>📄</span>
                             <a
                               href={sub.additional.fileAttachmentName}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[#0056b3] hover:underline truncate"
+                              className="text-[#063028] hover:underline truncate"
                               title={getOriginalFileName(sub.additional.fileAttachmentName)}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -531,10 +527,10 @@ export const IndustryDashboard: React.FC = () => {
                                 e.stopPropagation();
                                 window.open(sub.additional.fileAttachmentName, '_blank');
                               }}
-                              className="p-0.5 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-700 transition-colors shrink-0"
+                              className="p-0.5 hover:bg-stone-200 rounded text-stone-500 hover:text-stone-700 transition-colors shrink-0"
                               title="Download file"
                             >
-                              <Download className="h-3 w-3" />
+                              <Download className="h-3.5 w-3.5" />
                             </button>
                           </div>
                         )}
@@ -542,17 +538,17 @@ export const IndustryDashboard: React.FC = () => {
 
                       <Link 
                         to={`/details/${sub.id}`} 
-                        className="inline-flex items-center gap-1 text-xs font-bold text-[#0056b3] hover:underline"
+                        className="inline-flex items-center gap-1 text-sm font-bold text-[#c48825] hover:text-[#a6711c] hover:underline"
                       >
-                        View Full Details <ChevronRight className="h-3.5 w-3.5" />
+                        View Full Details <ChevronRight className="h-4 w-4" />
                       </Link>
                     </div>
 
                     {/* Admin remarks display */}
                     {sub.reviewRemarks && (
-                      <div className="p-3.5 rounded-xl border border-amber-100 bg-amber-50/30 space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#002147] block">CII Administrator Remarks</span>
-                        <p className="text-xs text-slate-600 leading-normal italic font-medium">
+                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 space-y-1">
+                        <span className="text-xs font-bold uppercase tracking-wider text-[#063028] block">CII Administrator Remarks</span>
+                        <p className="text-sm text-stone-700 leading-relaxed italic font-medium">
                           &quot;{sub.reviewRemarks}&quot;
                         </p>
                       </div>
@@ -572,32 +568,32 @@ export const IndustryDashboard: React.FC = () => {
         {currentView === 'form' && (
           <div className="space-y-6 animate-fade-in" id="problem-form-section">
             {/* Breadcrumb Header */}
-            <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-100/50 py-2.5 px-4 rounded-xl border border-slate-200/50">
-              <button onClick={() => setCurrentView('dashboard')} className="hover:text-[#002147] cursor-pointer">Dashboard</button>
-              <ChevronRight className="h-3 w-3 text-slate-400" />
-              <span className="text-[#002147] font-black">Submit Problem Statement</span>
+            <nav className="flex items-center gap-2 text-sm font-medium text-stone-600 bg-white py-3 px-5 rounded-2xl border border-stone-200/90">
+              <button onClick={() => setCurrentView('dashboard')} className="hover:text-[#063028] font-bold cursor-pointer">Dashboard</button>
+              <ChevronRight className="h-4 w-4 text-stone-400" />
+              <span className="text-[#063028] font-extrabold">Submit Problem Statement</span>
             </nav>
 
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 space-y-8">
-              <div className="border-b border-slate-100 pb-5">
-                <h2 className="text-xl font-black text-[#002147] font-display flex items-center gap-2">
-                  <FileText className="h-5.5 w-5.5 text-[#0056b3]" /> Post a Problem Statement
+            <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 space-y-8 shadow-sm">
+              <div className="border-b border-stone-200 pb-5">
+                <h2 className="text-2xl font-bold text-[#063028] font-serif flex items-center gap-2.5">
+                  <FileText className="h-6 w-6 text-[#c48825]" /> Post a Problem Statement
                 </h2>
-                <p className="text-xs text-slate-500">Provide official communication handles and parameters of your active physical or analytical challenge.</p>
+                <p className="text-sm text-stone-600 mt-1">Provide communication handles and parameters of your active physical or analytical challenge.</p>
               </div>
 
               <form onSubmit={handleReviewSubmission} className="space-y-8" id="problem-form">
                 
                 {/* Section A: Company Information */}
                 <div className="space-y-5">
-                  <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">
+                  <h3 className="text-xs font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200 pb-2">
                     Company Information
                   </h3>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* 1. Company Name */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Company Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -605,16 +601,16 @@ export const IndustryDashboard: React.FC = () => {
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
                         placeholder="e.g. Tata Motors Ltd"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.companyName ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.companyName ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.companyName && <p className="text-xs text-red-500 font-medium mt-1">{errors.companyName}</p>}
+                      {errors.companyName && <p className="text-sm text-red-600 mt-1">{errors.companyName}</p>}
                     </div>
 
                     {/* 2. Industry Category */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Industry Category <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -622,33 +618,33 @@ export const IndustryDashboard: React.FC = () => {
                         value={industryCategory}
                         onChange={(e) => setIndustryCategory(e.target.value)}
                         placeholder="e.g. Manufacturing"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.industryCategory ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.industryCategory ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.industryCategory && <p className="text-xs text-red-500 font-medium mt-1">{errors.industryCategory}</p>}
+                      {errors.industryCategory && <p className="text-sm text-red-600 mt-1">{errors.industryCategory}</p>}
                     </div>
 
                     {/* 3. SPOC Name */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                        SPOC Name <span className="text-red-500">*</span>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
+                        SPOC / Representative Name <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={spocName}
                         onChange={(e) => setSpocName(e.target.value)}
                         placeholder="e.g. Rajesh Sharma"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.spocName ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.spocName ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.spocName && <p className="text-xs text-red-500 font-medium mt-1">{errors.spocName}</p>}
+                      {errors.spocName && <p className="text-sm text-red-600 mt-1">{errors.spocName}</p>}
                     </div>
 
                     {/* 4. Official Email Address */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Official Email Address <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -656,16 +652,16 @@ export const IndustryDashboard: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="name@company.com"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.email ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.email ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.email && <p className="text-xs text-red-500 font-medium mt-1">{errors.email}</p>}
+                      {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                     </div>
 
                     {/* 5. Phone Number */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Phone Number <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -673,16 +669,16 @@ export const IndustryDashboard: React.FC = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+91 XXXXX XXXXX"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.phone ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.phone ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.phone && <p className="text-xs text-red-500 font-medium mt-1">{errors.phone}</p>}
+                      {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                     </div>
 
                     {/* 6. Company Website URL */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Company Website URL <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -690,138 +686,128 @@ export const IndustryDashboard: React.FC = () => {
                         value={website}
                         onChange={(e) => setWebsite(e.target.value)}
                         placeholder="www.company.com"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.website ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.website ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.website && <p className="text-xs text-red-500 font-medium mt-1">{errors.website}</p>}
+                      {errors.website && <p className="text-sm text-red-600 mt-1">{errors.website}</p>}
                     </div>
                   </div>
                 </div>
 
                 {/* Section B: Problem Statement Details */}
                 <div className="space-y-5">
-                  <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">
+                  <h3 className="text-xs font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200 pb-2">
                     Problem Statement Specifications
                   </h3>
 
                   <div className="grid grid-cols-1 gap-6">
                     {/* 7. Problem Statement Title */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Problem Statement Title <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Short descriptive title of the challenge"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                          errors.title ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        placeholder="e.g., Automated Quality Defect Detection for Casting Dies"
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                          errors.title ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
                       <div className="flex justify-between items-center mt-1">
                         {errors.title ? (
-                          <p className="text-xs text-red-500 font-medium">{errors.title}</p>
+                          <p className="text-sm text-red-600">{errors.title}</p>
                         ) : (
-                          <p className="text-[10px] text-slate-400">Min 25 characters</p>
+                          <p className="text-xs text-stone-500">Minimum 25 characters</p>
                         )}
-                        <span className="text-[10px] text-slate-400 font-mono">{title.length} chars</span>
+                        <span className="text-xs text-stone-400 font-mono">{title.length} chars</span>
                       </div>
                     </div>
 
                     {/* 8. Problem Statement Description */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Problem Statement Description <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         rows={4}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Please describe the core operational or physical engineering bottleneck inside your production line, environment parameters, and systems used."
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 resize-y leading-relaxed ${
-                          errors.description ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        placeholder="Describe the operational challenge, environment parameters, and physical specifications."
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white resize-y leading-relaxed ${
+                          errors.description ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.description && <p className="text-xs text-red-500 font-medium mt-1">{errors.description}</p>}
+                      {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description}</p>}
                     </div>
 
                     {/* 9. Expected Outcomes */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-stone-700">
                         Expected Outcomes <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         rows={3}
                         value={expectedOutcomes}
                         onChange={(e) => setExpectedOutcomes(e.target.value)}
-                        placeholder="What physical benchmarks, accuracy metrics, or engineering deliverables must the final academic solution satisfy?"
-                        className={`block w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 resize-y leading-relaxed ${
-                          errors.expectedOutcomes ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                        placeholder="What benchmarks, accuracy metrics, or engineering deliverables must the solution satisfy?"
+                        className={`block w-full px-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white resize-y leading-relaxed ${
+                          errors.expectedOutcomes ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                         }`}
                       />
-                      {errors.expectedOutcomes && <p className="text-xs text-red-500 font-medium mt-1">{errors.expectedOutcomes}</p>}
+                      {errors.expectedOutcomes && <p className="text-sm text-red-600 mt-1">{errors.expectedOutcomes}</p>}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* 10. Budget */}
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-bold text-stone-700">
                           Budget / Funding Offered <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <DollarSign className="h-4 w-4" />
+                          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                            <DollarSign className="h-5 w-5" />
                           </span>
                           <input
                             type="text"
                             value={budget}
                             onChange={(e) => setBudget(e.target.value)}
                             placeholder="e.g. Rs 5,00,000"
-                            className={`block w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 ${
-                              errors.budget ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                            className={`block w-full pl-11 pr-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white ${
+                              errors.budget ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                             }`}
                           />
                         </div>
-                        <div className="flex justify-between items-center mt-1">
-                          {errors.budget && (
-                            <p className="text-xs text-red-500 font-medium">{errors.budget}</p>
-                          )}
-                        </div>
+                        {errors.budget && <p className="text-sm text-red-600 mt-1">{errors.budget}</p>}
                       </div>
 
                       {/* 11. Deadline */}
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-bold text-stone-700">
                           Expected Solution Deadline <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <Calendar className="h-4 w-4" />
+                          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                            <Calendar className="h-5 w-5" />
                           </span>
                           <input
                             type="date"
                             value={deadline}
                             onChange={(e) => setDeadline(e.target.value)}
-                            className={`block w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0056b3]/10 transition-all font-medium bg-slate-50/50 cursor-pointer ${
-                              errors.deadline ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#0056b3]'
+                            className={`block w-full pl-11 pr-4 py-3 border rounded-xl text-base text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#063028]/10 bg-white cursor-pointer ${
+                              errors.deadline ? 'border-red-400 focus:border-red-500' : 'border-stone-300 focus:border-[#063028]'
                             }`}
                           />
                         </div>
-                        <div className="flex justify-between items-center mt-1">
-                          {errors.deadline ? (
-                            <p className="text-xs text-red-500 font-medium">{errors.deadline}</p>
-                          ) : (
-                            <p className="text-[10px] text-slate-400">Format: DD/MM/YYYY</p>
-                          )}
-                        </div>
+                        {errors.deadline && <p className="text-sm text-red-600 mt-1">{errors.deadline}</p>}
                       </div>
                     </div>
 
                     {/* 12. Supporting Documents / Attachments */}
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <label className="block text-sm font-bold text-stone-700">
                         Supporting Documents / Attachments
                       </label>
                       
@@ -829,12 +815,12 @@ export const IndustryDashboard: React.FC = () => {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-150 ${
+                        className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
                           dragOver 
-                            ? 'border-[#0056b3] bg-blue-50/40' 
+                            ? 'border-[#063028] bg-[#edf4f0]' 
                             : attachedFile 
-                            ? 'border-emerald-300 bg-emerald-50/10' 
-                            : 'border-slate-300 bg-slate-50/40 hover:bg-slate-50'
+                            ? 'border-emerald-300 bg-emerald-50/20' 
+                            : 'border-stone-300 bg-stone-50/50 hover:bg-stone-50'
                         }`}
                       >
                         <input
@@ -847,37 +833,37 @@ export const IndustryDashboard: React.FC = () => {
 
                         {attachedFile ? (
                           <div className="flex flex-col items-center gap-2">
-                            <div className="p-2 bg-emerald-100 text-emerald-700 rounded-full">
+                            <div className="p-2 bg-emerald-100 text-emerald-800 rounded-full">
                               <CheckCircle className="h-6 w-6" />
                             </div>
                             <div className="leading-tight">
-                              <p className="text-sm font-bold text-slate-800">{attachedFile.name}</p>
-                              <p className="text-xs text-slate-500 font-mono">
+                              <p className="text-base font-bold text-stone-900">{attachedFile.name}</p>
+                              <p className="text-xs text-stone-500 font-mono">
                                 ({attachedFile.size < 1024 * 1024 ? `${(attachedFile.size / 1024).toFixed(1)} KB` : `${(attachedFile.size / (1024 * 1024)).toFixed(2)} MB`})
                               </p>
                             </div>
                             <button
                               type="button"
                               onClick={removeAttachedFile}
-                              className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-800 hover:underline"
+                              className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-red-600 hover:text-red-800 hover:underline cursor-pointer"
                             >
-                              <X className="h-3 w-3" /> Remove File
+                              <X className="h-4 w-4" /> Remove File
                             </button>
                           </div>
                         ) : (
                           <label htmlFor="form-file-upload" className="cursor-pointer flex flex-col items-center gap-3">
-                            <UploadCloud className="h-10 w-10 text-slate-400" />
+                            <UploadCloud className="h-10 w-10 text-stone-400" />
                             <div>
-                              <span className="text-sm font-bold text-[#0056b3] hover:underline">Click to upload</span>
-                              <span className="text-sm text-slate-500"> or drag and drop</span>
+                              <span className="text-base font-bold text-[#c48825] hover:text-[#a6711c] underline">Click to upload</span>
+                              <span className="text-base text-stone-600"> or drag and drop</span>
                             </div>
-                            <p className="text-[10px] text-slate-400">Images (Max 2MB) &amp; PDF (Max 10MB)</p>
+                            <p className="text-xs text-stone-500">Images (Max 2MB) &amp; PDF (Max 10MB)</p>
                           </label>
                         )}
                       </div>
                       
                       {errors.attachedFile && (
-                        <p className="text-xs text-red-500 font-medium mt-1">{errors.attachedFile}</p>
+                        <p className="text-sm text-red-600 mt-1">{errors.attachedFile}</p>
                       )}
                     </div>
 
@@ -885,29 +871,29 @@ export const IndustryDashboard: React.FC = () => {
                 </div>
 
                 {/* Form Buttons */}
-                <div className="border-t border-slate-100 pt-6 flex justify-between items-center">
+                <div className="border-t border-stone-200 pt-6 flex justify-between items-center">
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="inline-flex items-center gap-2 px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-3 border border-stone-300 hover:bg-stone-50 rounded-xl text-sm font-bold text-stone-700 transition-all cursor-pointer"
                   >
-                    <RefreshCw className="h-3.5 w-3.5" /> Reset Form
+                    <RefreshCw className="h-4 w-4" /> Reset Form
                   </button>
 
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentView('dashboard')}
-                      className="px-5 py-3 border border-transparent hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-500 transition-all cursor-pointer"
+                      className="px-5 py-3 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-100 transition-all cursor-pointer"
                     >
                       Cancel
                     </button>
                     
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#002147] hover:bg-[#0056b3] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl transition-all shadow-md cursor-pointer"
                     >
-                      Review Submission <Eye className="h-4 w-4" />
+                      Review Submission <Eye className="h-4.5 w-4.5" />
                     </button>
                   </div>
                 </div>
@@ -921,124 +907,124 @@ export const IndustryDashboard: React.FC = () => {
         {currentView === 'review' && (
           <div className="space-y-6 animate-fade-in" id="review-submission-section">
             {/* Breadcrumb Header */}
-            <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-100/50 py-2.5 px-4 rounded-xl border border-slate-200/50">
-              <button onClick={() => setCurrentView('dashboard')} className="hover:text-[#002147] cursor-pointer">Dashboard</button>
-              <ChevronRight className="h-3 w-3 text-slate-400" />
-              <button onClick={() => setCurrentView('form')} className="hover:text-[#002147] cursor-pointer">Submit Problem Statement</button>
-              <ChevronRight className="h-3 w-3 text-slate-400" />
-              <span className="text-[#002147] font-black">Review Parameters</span>
+            <nav className="flex items-center gap-2 text-sm font-medium text-stone-600 bg-white py-3 px-5 rounded-2xl border border-stone-200/90">
+              <button onClick={() => setCurrentView('dashboard')} className="hover:text-[#063028] font-bold cursor-pointer">Dashboard</button>
+              <ChevronRight className="h-4 w-4 text-stone-400" />
+              <button onClick={() => setCurrentView('form')} className="hover:text-[#063028] font-bold cursor-pointer">Submit Problem</button>
+              <ChevronRight className="h-4 w-4 text-stone-400" />
+              <span className="text-[#063028] font-extrabold">Review Parameters</span>
             </nav>
 
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 space-y-8">
-              <div className="border-b border-slate-100 pb-5">
-                <h2 className="text-xl font-black text-[#002147] font-display flex items-center gap-2">
-                  <FileCheck className="h-5.5 w-5.5 text-emerald-600" /> Review Problem Statement Parameters
+            <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 space-y-8 shadow-sm">
+              <div className="border-b border-stone-200 pb-5">
+                <h2 className="text-2xl font-bold text-[#063028] font-serif flex items-center gap-2.5">
+                  <FileCheck className="h-6 w-6 text-emerald-700" /> Review Problem Statement Parameters
                 </h2>
-                <p className="text-xs text-slate-500">Carefully review the proposed physical bottlenecks and corporate contact details before completing filing.</p>
+                <p className="text-sm text-stone-600 mt-1">Carefully review the proposed physical bottlenecks and corporate contact details before completing filing.</p>
               </div>
 
               <div className="space-y-8">
                 
                 {/* 1. Company Information Section */}
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-150 space-y-4">
-                  <h3 className="text-xs font-black text-[#002147] uppercase tracking-wider border-b border-slate-200 pb-2">
+                <div className="bg-[#faf8f4] p-6 rounded-2xl border border-stone-200 space-y-4">
+                  <h3 className="text-xs font-bold text-[#063028] uppercase tracking-wider border-b border-stone-200 pb-2">
                     Company Information
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-xs sm:text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-sm">
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Company Name</span>
-                      <span className="font-bold text-slate-800 block mt-0.5">{companyName}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Company Name</span>
+                      <span className="font-bold text-stone-900 block mt-1">{companyName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Industry Category</span>
-                      <span className="font-semibold text-slate-700 block mt-0.5">{industryCategory}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Industry Category</span>
+                      <span className="font-semibold text-stone-800 block mt-1">{industryCategory}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">SPOC Name</span>
-                      <span className="font-semibold text-slate-700 block mt-0.5">{spocName}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">SPOC Name</span>
+                      <span className="font-semibold text-stone-800 block mt-1">{spocName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Official Email</span>
-                      <span className="font-semibold text-slate-700 block mt-0.5">{email}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Official Email</span>
+                      <span className="font-semibold text-stone-800 block mt-1">{email}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Phone Number</span>
-                      <span className="font-semibold text-slate-700 block mt-0.5">{phone}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Phone Number</span>
+                      <span className="font-semibold text-stone-800 block mt-1">{phone}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Company Website</span>
-                      <span className="font-semibold text-slate-700 block mt-0.5">{website}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Company Website</span>
+                      <span className="font-semibold text-stone-800 block mt-1">{website}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 2. Problem Statement Parameters Section */}
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-150 space-y-5">
-                  <h3 className="text-xs font-black text-[#002147] uppercase tracking-wider border-b border-slate-200 pb-2">
+                <div className="bg-[#faf8f4] p-6 rounded-2xl border border-stone-200 space-y-5">
+                  <h3 className="text-xs font-bold text-[#063028] uppercase tracking-wider border-b border-stone-200 pb-2">
                     Problem Statement Parameters
                   </h3>
                   
-                  <div className="space-y-4 text-xs sm:text-sm">
+                  <div className="space-y-4 text-sm">
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Problem Title</span>
-                      <span className="font-bold text-slate-800 text-base block mt-0.5">{title}</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Problem Title</span>
+                      <span className="font-bold text-[#063028] text-lg block mt-1">{title}</span>
                     </div>
                     
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Detailed Description</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Detailed Description</span>
                       <div 
-                        className="text-slate-700 leading-relaxed font-medium html-content mt-1 space-y-2 text-xs sm:text-sm"
+                        className="text-stone-700 leading-relaxed font-medium html-content mt-1 space-y-2 text-sm sm:text-base"
                         dangerouslySetInnerHTML={{ __html: sanitizeHTML(description) }}
                       />
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Expected Outcomes</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Expected Outcomes</span>
                       <div 
-                        className="text-slate-700 leading-relaxed font-medium html-content mt-1 space-y-2 text-xs sm:text-sm"
+                        className="text-stone-700 leading-relaxed font-medium html-content mt-1 space-y-2 text-sm sm:text-base"
                         dangerouslySetInnerHTML={{ __html: sanitizeHTML(expectedOutcomes) }}
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
                       <div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Allocated Budget</span>
-                        <span className="font-bold text-slate-800 block mt-0.5">{budget}</span>
+                        <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Allocated Budget</span>
+                        <span className="font-bold text-stone-900 block mt-1">{budget}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Target Solution Deadline</span>
-                        <span className="font-bold text-slate-800 block mt-0.5">{formatToDDMMYYYY(deadline)}</span>
+                        <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Target Solution Deadline</span>
+                        <span className="font-bold text-stone-900 block mt-1">{formatToDDMMYYYY(deadline)}</span>
                       </div>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide block">Uploaded Supporting Files</span>
+                      <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Uploaded Supporting Files</span>
                       {attachedFile ? (
-                        <div className="mt-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex justify-between items-center">
+                        <div className="mt-2 p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex justify-between items-center">
                           <div className="flex items-center gap-2">
-                            <FileCheck className="h-4 w-4 text-emerald-600" />
-                            <span className="font-bold text-emerald-800 text-xs">{attachedFile.name}</span>
+                            <FileCheck className="h-5 w-5 text-emerald-700" />
+                            <span className="font-bold text-emerald-900 text-sm">{attachedFile.name}</span>
                           </div>
-                          <span className="font-mono text-[10px] text-emerald-600">({attachedFile.size < 1024 * 1024 ? `${(attachedFile.size / 1024).toFixed(1)} KB` : `${(attachedFile.size / (1024 * 1024)).toFixed(2)} MB`})</span>
+                          <span className="font-mono text-xs text-emerald-700">({attachedFile.size < 1024 * 1024 ? `${(attachedFile.size / 1024).toFixed(1)} KB` : `${(attachedFile.size / (1024 * 1024)).toFixed(2)} MB`})</span>
                         </div>
                       ) : (
-                        <span className="text-slate-500 font-medium mt-1 block italic">No files attached</span>
+                        <span className="text-stone-500 font-medium mt-1 block italic">No files attached</span>
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* Terms agreement notice */}
-                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/50 text-xs text-slate-600 leading-normal">
-                  <strong className="text-slate-800">CII Disclaimer:</strong> Clicking Final Submit registers this challenge inside the official CII-SIC directory ledger. The parameters will be locked and sent directly to administrators for rapid distribution approvals.
+                <div className="p-4 bg-amber-50/80 rounded-xl border border-amber-200 text-sm text-stone-700 leading-relaxed">
+                  <strong className="text-stone-900">CII Disclaimer:</strong> Submitting this statement registers your challenge inside the official CII-SIC directory ledger. The parameters will be locked and sent directly to administrators for rapid distribution approvals.
                 </div>
 
                 {/* Review Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 border-t border-slate-150 pt-6">
+                <div className="flex flex-col sm:flex-row gap-4 border-t border-stone-200 pt-6">
                   <button
                     type="button"
                     onClick={() => setCurrentView('form')}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition-all"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 border border-stone-300 hover:bg-stone-50 rounded-xl text-sm font-bold text-stone-700 cursor-pointer transition-all"
                   >
                     <ArrowLeft className="h-4 w-4" /> Back to Edit
                   </button>
@@ -1046,9 +1032,9 @@ export const IndustryDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleFinalSubmit}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold uppercase tracking-widest rounded-xl cursor-pointer shadow-md transition-all"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl cursor-pointer shadow-md transition-all"
                   >
-                    Final Submit &amp; File Proposal <CheckCircle className="h-4 w-4" />
+                    Final Submit &amp; File Proposal <CheckCircle className="h-4.5 w-4.5" />
                   </button>
                 </div>
 
@@ -1061,20 +1047,22 @@ export const IndustryDashboard: React.FC = () => {
         {currentView === 'success' && (
           <div className="space-y-6 animate-fade-in" id="success-section">
             {/* Breadcrumb Header */}
-            <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-100/50 py-2.5 px-4 rounded-xl border border-slate-200/50">
-              <button onClick={handleReturnToDashboard} className="hover:text-[#002147] cursor-pointer">Dashboard</button>
-              <ChevronRight className="h-3 w-3 text-slate-400" />
-              <span className="text-[#002147] font-black">Submission Successful</span>
+            <nav className="flex items-center gap-2 text-sm font-medium text-stone-600 bg-white py-3 px-5 rounded-2xl border border-stone-200/90">
+              <button onClick={handleReturnToDashboard} className="hover:text-[#063028] font-bold cursor-pointer">Dashboard</button>
+              <ChevronRight className="h-4 w-4 text-stone-400" />
+              <span className="text-[#063028] font-extrabold">Submission Successful</span>
             </nav>
 
-            <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-6">
-              {/* Minimal Clean Message (NO illustrations, animations, or submission icons as per specification) */}
+            <div className="bg-white rounded-3xl border border-stone-200/90 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-6 shadow-sm">
               <div className="space-y-3">
-                <h2 className="text-2xl font-black text-[#002147] font-display">
+                <div className="mx-auto h-16 w-16 rounded-full bg-[#edf4f0] text-[#063028] flex items-center justify-center mb-2">
+                  <CheckCircle className="h-8 w-8" />
+                </div>
+                <h2 className="text-3xl font-extrabold text-[#063028] font-serif">
                   Submission Completed
                 </h2>
-                <p className="text-slate-600 text-sm font-medium leading-relaxed max-w-md mx-auto">
-                  "Your problem statement has been submitted successfully."
+                <p className="text-stone-700 text-base font-medium leading-relaxed max-w-md mx-auto">
+                  Your problem statement has been submitted successfully and is queued for CII administrator review.
                 </p>
               </div>
 
@@ -1082,13 +1070,13 @@ export const IndustryDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
                 <button
                   onClick={handleSubmitAnother}
-                  className="px-5 py-3.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-700 transition-all cursor-pointer"
+                  className="px-5 py-3.5 border border-stone-300 hover:bg-stone-50 rounded-xl text-sm font-bold text-stone-700 transition-all cursor-pointer"
                 >
-                  Submit Another Problem Statement
+                  Submit Another Statement
                 </button>
                 <button
                   onClick={handleReturnToDashboard}
-                  className="px-6 py-3.5 bg-[#002147] hover:bg-[#0056b3] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer"
+                  className="px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl transition-all shadow-sm cursor-pointer"
                 >
                   Return to Dashboard
                 </button>

@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  ShieldCheck, FileText, CheckCircle, Clock, AlertTriangle, Search, 
-  Filter, ArrowUpDown, ChevronLeft, ChevronRight, Eye, Check, X, 
-  Grid, ListFilter, SlidersHorizontal, RefreshCw, LayoutDashboard
+  FileText, CheckCircle, AlertTriangle, Search, 
+  ChevronLeft, ChevronRight, Eye, Check, X, 
+  SlidersHorizontal, LayoutDashboard
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
-import { SubmissionStatus } from '../types';
 import { stripHTML } from '../lib/html';
 
 export const AdminDashboard: React.FC = () => {
-  const { submissions, updateSubmissionStatus, showToast, resetData, currentUser } = useApp();
+  const { submissions, updateSubmissionStatus, showToast, currentUser } = useApp();
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,40 +94,33 @@ export const AdminDashboard: React.FC = () => {
 
   // Quick Action handlers
   const handleQuickApprove = (id: string) => {
-    updateSubmissionStatus(id, 'Approved', 'Quick Approved via Admin Ledger.');
+    updateSubmissionStatus(id, 'Approved', 'Approved via Admin Review.');
     showToast(`Submission ${id} Approved successfully!`, 'success');
   };
 
   const handleQuickReject = (id: string) => {
-    updateSubmissionStatus(id, 'Rejected', 'Rejected via Quick Actions.');
+    updateSubmissionStatus(id, 'Rejected', 'Rejected via Admin Review.');
     showToast(`Submission ${id} marked as Rejected.`, 'info');
-  };
-
-  const handleResetData = () => {
-    if (window.confirm('This will restore all default submissions and sign out current session. Proceed?')) {
-      resetData();
-      showToast('System data successfully reset to mock baseline.', 'info');
-    }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Approved':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            Approved
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <Check className="h-3.5 w-3.5" /> Approved
           </span>
         );
       case 'Rejected':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
-            Rejected
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-800 border border-red-200">
+            <X className="h-3.5 w-3.5" /> Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
-            Pending
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 animate-pulse">
+            Pending Review
           </span>
         );
     }
@@ -140,61 +132,64 @@ export const AdminDashboard: React.FC = () => {
       {/* Title & Actions Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <LayoutDashboard className="h-5 w-5 text-[#8f6d3b]" />
-            <h1 className="text-2xl font-black text-[#0b2545] font-display tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-[#edf4f0] text-[#063028]">
+              <LayoutDashboard className="h-6 w-6 text-[#063028]" />
+            </div>
+            <h1 className="text-3xl font-extrabold text-[#063028] font-serif tracking-tight">
               Welcome back, {currentUser?.name || 'Admin'}
             </h1>
           </div>
-          <p className="text-xs text-slate-500">Conduct administrative reviews, download attachments, and issue decisions on filed research statements.</p>
+          <p className="text-base text-stone-600 leading-relaxed pl-1">
+            Conduct administrative reviews, download technical attachments, and issue decisions on filed research statements.
+          </p>
         </div>
       </div>
 
       {/* Metrics Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
         
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-none flex items-center justify-between">
+        <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Submissions</div>
-            <div className="text-3xl font-black text-[#0b2545] font-display leading-none">{metrics.total}</div>
+            <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Submissions</div>
+            <div className="text-3xl font-extrabold text-[#063028] font-serif leading-none">{metrics.total}</div>
           </div>
-          <div className="p-3 bg-blue-50 text-[#0b2545] rounded-xl"><FileText className="h-5 w-5" /></div>
+          <div className="p-3 bg-[#edf4f0] text-[#063028] rounded-xl"><FileText className="h-6 w-6" /></div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-none flex items-center justify-between">
+        <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Approved</div>
-            <div className="text-3xl font-black text-emerald-600 font-display leading-none">{metrics.approved}</div>
+            <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Approved</div>
+            <div className="text-3xl font-extrabold text-emerald-700 font-serif leading-none">{metrics.approved}</div>
           </div>
-          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle className="h-5 w-5" /></div>
+          <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl"><CheckCircle className="h-6 w-6" /></div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-none flex items-center justify-between">
+        <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Rejected</div>
-            <div className="text-3xl font-black text-red-600 font-display leading-none">{metrics.rejected}</div>
+            <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Rejected</div>
+            <div className="text-3xl font-extrabold text-red-700 font-serif leading-none">{metrics.rejected}</div>
           </div>
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl"><AlertTriangle className="h-5 w-5" /></div>
+          <div className="p-3 bg-red-50 text-red-700 rounded-xl"><AlertTriangle className="h-6 w-6" /></div>
         </div>
 
       </div>
 
       {/* Query Filter panel */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-none space-y-4 mb-6">
-        
+      <div className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-sm space-y-4 mb-6">
         <div className="flex flex-col lg:flex-row justify-between gap-4">
           
           {/* Keyword Search Input */}
           <div className="relative flex-1">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Search className="h-4 w-4" />
+            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+              <Search className="h-5 w-5" />
             </span>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
               placeholder="Search by Title, Ref ID, Company Name, or Representative..."
-              className="block w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0b2545] bg-slate-50/50"
+              className="block w-full pl-10 pr-4 py-3 border border-stone-300 rounded-xl text-base text-stone-900 focus:outline-none focus:border-[#063028] focus:ring-2 focus:ring-[#063028]/10 bg-white"
             />
           </div>
 
@@ -204,10 +199,10 @@ export const AdminDashboard: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white text-slate-700 font-medium focus:outline-none focus:border-[#0b2545]"
+              className="px-4 py-2.5 border border-stone-300 rounded-xl text-sm bg-white text-stone-800 font-semibold focus:outline-none focus:border-[#063028] cursor-pointer"
             >
               <option value="All">All Statuses</option>
-              <option value="Pending">Pending</option>
+              <option value="Pending">Pending Review</option>
               <option value="Approved">Approved</option>
               <option value="Rejected">Rejected</option>
             </select>
@@ -215,7 +210,7 @@ export const AdminDashboard: React.FC = () => {
             <select
               value={sectorFilter}
               onChange={(e) => { setSectorFilter(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white text-slate-700 font-medium focus:outline-none focus:border-[#0b2545]"
+              className="px-4 py-2.5 border border-stone-300 rounded-xl text-sm bg-white text-stone-800 font-semibold focus:outline-none focus:border-[#063028] cursor-pointer"
             >
               {uniqueSectors.map((sector) => (
                 <option key={sector} value={sector}>
@@ -227,7 +222,7 @@ export const AdminDashboard: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white text-slate-700 font-medium focus:outline-none focus:border-[#0b2545]"
+              className="px-4 py-2.5 border border-stone-300 rounded-xl text-sm bg-white text-stone-800 font-semibold focus:outline-none focus:border-[#063028] cursor-pointer"
             >
               <option value="date-desc">Newest First</option>
               <option value="date-asc">Oldest First</option>
@@ -237,24 +232,23 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
         </div>
-
       </div>
 
       {/* Main Submissions Ledger Table/Grid */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-none overflow-hidden">
+      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm overflow-hidden">
         
         {processedSubmissions.length === 0 ? (
           <div className="p-16 text-center space-y-4">
-            <SlidersHorizontal className="h-10 w-10 text-slate-300 mx-auto" />
+            <SlidersHorizontal className="h-12 w-12 text-stone-300 mx-auto" />
             <div className="space-y-1">
-              <p className="font-bold text-slate-700 text-sm">No Matching Results Found</p>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">Try refining your keyword search.</p>
+              <p className="font-bold text-stone-800 text-base">No Matching Results Found</p>
+              <p className="text-sm text-stone-500 max-w-sm mx-auto">Try refining your keyword search or filter criteria.</p>
             </div>
             <button
-              onClick={() => { setSearchQuery(''); }}
-              className="px-3.5 py-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-xs font-bold text-[#0b2545] border border-slate-200"
+              onClick={() => { setSearchQuery(''); setStatusFilter('All'); setSectorFilter('All'); }}
+              className="px-4 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-sm font-bold text-[#063028] border border-stone-200 cursor-pointer"
             >
-              Clear Search Query
+              Clear Filters
             </button>
           </div>
         ) : (
@@ -263,42 +257,42 @@ export const AdminDashboard: React.FC = () => {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200/80 text-slate-400 text-[10px] uppercase font-black tracking-widest font-mono">
+                  <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase font-bold tracking-wider font-mono">
                     <th className="px-6 py-4">Filing ID &amp; Date</th>
                     <th className="px-6 py-4">Filing Corporation</th>
-                    <th className="px-6 py-4">Problem statement Title</th>
+                    <th className="px-6 py-4">Problem Statement Title</th>
                     <th className="px-6 py-4 text-center">Status</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-600 text-sm">
+                <tbody className="divide-y divide-stone-100 text-stone-700 text-sm">
                   {paginatedSubmissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <tr key={sub.id} className="hover:bg-stone-50/70 transition-colors group">
                       
                       {/* Filing ID & Date */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col leading-tight">
-                          <span className="font-mono font-bold text-[#0b2545] text-xs">{sub.id}</span>
-                          <span className="text-[10px] text-slate-400 mt-1">{new Date(sub.submittedDate).toLocaleDateString()}</span>
+                          <span className="font-mono font-bold text-[#063028] text-sm">{sub.id}</span>
+                          <span className="text-xs text-stone-500 mt-1">{new Date(sub.submittedDate).toLocaleDateString()}</span>
                         </div>
                       </td>
 
                       {/* Filing Corporation */}
                       <td className="px-6 py-4">
                         <div className="flex flex-col max-w-xs">
-                          <span className="font-bold text-slate-800 leading-tight">{sub.company.companyName}</span>
-                          <span className="text-xs text-slate-400 mt-0.5 truncate">{sub.company.representativeName} • {sub.company.email}</span>
-                          <span className="text-[10px] text-[#8f6d3b] font-semibold mt-1 font-mono uppercase">{sub.company.industrySector}</span>
+                          <span className="font-bold text-stone-900 text-base leading-tight">{sub.company.companyName}</span>
+                          <span className="text-xs text-stone-500 mt-0.5 truncate">{sub.company.representativeName} • {sub.company.email}</span>
+                          <span className="text-xs text-[#c48825] font-bold mt-1 uppercase tracking-wide">{sub.company.industrySector}</span>
                         </div>
                       </td>
 
                       {/* Problem Title */}
                       <td className="px-6 py-4">
                         <div className="max-w-md">
-                          <p className="font-bold text-[#0b2545] line-clamp-1 leading-normal">
+                          <p className="font-bold text-[#063028] text-base line-clamp-1 leading-normal">
                             {sub.details.title}
                           </p>
-                          <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{stripHTML(sub.details.description)}</p>
+                          <p className="text-xs text-stone-500 line-clamp-1 mt-1 leading-relaxed">{stripHTML(sub.details.description)}</p>
                         </div>
                       </td>
 
@@ -309,30 +303,30 @@ export const AdminDashboard: React.FC = () => {
 
                       {/* Actions */}
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="inline-flex items-center gap-1.5">
+                        <div className="inline-flex items-center gap-2">
                           <Link
                             to={`/details/${sub.id}`}
-                            className="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 hover:bg-[#0b2545] hover:text-white transition-all shadow-sm"
+                            className="p-2 bg-stone-100 border border-stone-200 rounded-xl text-stone-700 hover:bg-[#063028] hover:text-white transition-all shadow-xs"
                             title="View Full Details"
                           >
-                            <Eye className="h-4 w-4" />
+                            <Eye className="h-4.5 w-4.5" />
                           </Link>
                           
                           {sub.status === 'Pending' && (
                             <>
                               <button
                                 onClick={() => handleQuickApprove(sub.id)}
-                                className="p-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                className="p-2 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all shadow-xs cursor-pointer"
                                 title="Approve Problem"
                               >
-                                <Check className="h-4 w-4" />
+                                <Check className="h-4.5 w-4.5" />
                               </button>
                               <button
                                 onClick={() => handleQuickReject(sub.id)}
-                                className="p-1.5 bg-red-50 border border-red-200 rounded-lg text-red-700 hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                className="p-2 bg-red-50 border border-red-200 rounded-xl text-red-700 hover:bg-red-600 hover:text-white transition-all shadow-xs cursor-pointer"
                                 title="Reject Problem"
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-4.5 w-4.5" />
                               </button>
                             </>
                           )}
@@ -346,38 +340,38 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Mobile Stack Cards View */}
-            <div className="block md:hidden divide-y divide-slate-100">
+            <div className="block md:hidden divide-y divide-stone-100">
               {paginatedSubmissions.map((sub) => (
                 <div key={sub.id} className="p-5 space-y-4">
                   
                   <div className="flex justify-between items-start gap-2">
                     <div className="space-y-0.5">
-                      <span className="text-[10px] font-mono font-bold text-slate-400">ID: {sub.id}</span>
-                      <h3 className="font-bold text-slate-800 text-sm leading-snug">{sub.details.title}</h3>
+                      <span className="text-xs font-mono font-bold text-stone-400">ID: {sub.id}</span>
+                      <h3 className="font-bold text-stone-900 text-base leading-snug">{sub.details.title}</h3>
                     </div>
                     <div className="shrink-0">{getStatusBadge(sub.status)}</div>
                   </div>
 
-                  <div className="text-xs text-slate-600 space-y-1">
-                    <p><strong className="text-slate-700">Company:</strong> {sub.company.companyName}</p>
-                    <p><strong className="text-slate-700">Sector:</strong> {sub.company.industrySector}</p>
-                    <p><strong className="text-slate-700">Representative:</strong> {sub.company.representativeName}</p>
-                    <p><strong className="text-slate-700">Filing Date:</strong> {new Date(sub.submittedDate).toLocaleDateString()}</p>
+                  <div className="text-sm text-stone-600 space-y-1">
+                    <p><strong className="text-stone-800">Company:</strong> {sub.company.companyName}</p>
+                    <p><strong className="text-stone-800">Sector:</strong> {sub.company.industrySector}</p>
+                    <p><strong className="text-stone-800">Representative:</strong> {sub.company.representativeName}</p>
+                    <p><strong className="text-stone-800">Filing Date:</strong> {new Date(sub.submittedDate).toLocaleDateString()}</p>
                   </div>
 
-                  <div className="pt-2 flex justify-between items-center border-t border-slate-100/60">
-                    <span className="text-[10px] text-slate-400 font-mono">Filing Date: {new Date(sub.submittedDate).toLocaleDateString()}</span>
+                  <div className="pt-2 flex justify-between items-center border-t border-stone-100">
+                    <span className="text-xs text-stone-500 font-mono">{new Date(sub.submittedDate).toLocaleDateString()}</span>
                     <div className="flex gap-2">
                       <Link
                         to={`/details/${sub.id}`}
-                        className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-[#0b2545] flex items-center gap-1"
+                        className="px-3.5 py-2 bg-stone-100 border border-stone-200 rounded-xl text-sm font-bold text-[#063028] flex items-center gap-1.5"
                       >
-                        <Eye className="h-3 w-3" /> View Details
+                        <Eye className="h-4 w-4" /> View
                       </Link>
                       {sub.status === 'Pending' && (
                         <button
                           onClick={() => handleQuickApprove(sub.id)}
-                          className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold"
+                          className="px-3.5 py-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-sm font-bold cursor-pointer"
                         >
                           Approve
                         </button>
@@ -391,8 +385,8 @@ export const AdminDashboard: React.FC = () => {
 
             {/* Pagination Controls Footer */}
             {totalPages > 1 && (
-              <div className="border-t border-slate-100 px-6 py-4 flex items-center justify-between flex-wrap gap-4 bg-slate-50/50">
-                <span className="text-xs text-slate-400 font-semibold">
+              <div className="border-t border-stone-200 px-6 py-4 flex items-center justify-between flex-wrap gap-4 bg-stone-50/70">
+                <span className="text-sm text-stone-600 font-medium">
                   Showing page {currentPage} of {totalPages} ({processedSubmissions.length} statements matching query)
                 </span>
                 
@@ -400,7 +394,7 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                    className="p-2 rounded-xl border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 disabled:opacity-40 transition-colors cursor-pointer"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -409,10 +403,10 @@ export const AdminDashboard: React.FC = () => {
                     <button
                       key={i + 1}
                       onClick={() => handlePageChange(i + 1)}
-                      className={`h-8 w-8 text-xs font-bold rounded-lg border transition-all ${
+                      className={`h-9 w-9 text-sm font-bold rounded-xl border transition-all cursor-pointer ${
                         currentPage === i + 1
-                          ? 'bg-[#0b2545] border-[#0b2545] text-white shadow-sm'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                          ? 'bg-[#063028] border-[#063028] text-white shadow-xs'
+                          : 'border-stone-300 bg-white text-stone-700 hover:bg-stone-50'
                       }`}
                     >
                       {i + 1}
@@ -422,7 +416,7 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                    className="p-2 rounded-xl border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 disabled:opacity-40 transition-colors cursor-pointer"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
