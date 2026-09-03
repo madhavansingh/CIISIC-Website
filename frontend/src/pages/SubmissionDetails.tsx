@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Building2, FileText, Settings, ShieldAlert, ArrowLeft, CheckCircle, 
   XCircle, Clock, MessageSquare, AlertTriangle,
-  Edit, Save, X, Wrench
+  Edit, Save, X, Wrench, Share2, Printer, Copy, GraduationCap, CheckCircle2
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { sanitizeHTML } from '../lib/html';
@@ -22,8 +22,16 @@ export const SubmissionDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(!submission);
   const [error, setError] = useState<string | null>(null);
 
-  const backLink = currentUser?.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard';
-  const backLinkText = currentUser?.role === 'admin' ? 'Back to Admin Command Ledger' : 'Back to Industry Workspace';
+  const backLink = currentUser?.role === 'admin' 
+    ? '/admin/dashboard' 
+    : currentUser?.role === 'industry'
+    ? '/industry/dashboard'
+    : '/problem-statements';
+  const backLinkText = currentUser?.role === 'admin' 
+    ? 'Back to Admin Command Ledger' 
+    : currentUser?.role === 'industry'
+    ? 'Back to Industry Workspace'
+    : 'Back to Problem Statements Directory';
 
   const [remarks, setRemarks] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -598,7 +606,7 @@ export const SubmissionDetails: React.FC = () => {
 
               </div>
             </div>
-          ) : (
+          ) : currentUser?.role === 'industry' ? (
             <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs p-6 space-y-5 sticky top-24">
               <h3 className="text-xs font-bold text-stone-500 uppercase tracking-wider border-b border-stone-100 pb-3 flex items-center gap-2">
                 <Settings className="h-4 w-4 text-[#c48825]" /> Submission Status
@@ -662,6 +670,81 @@ export const SubmissionDetails: React.FC = () => {
                     </p>
                   </div>
                 )}
+              </div>
+            </div>
+          ) : (
+            /* Public Visitor / Student / Faculty Actions Panel */
+            <div className="space-y-6 sticky top-24">
+              <div className="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-6 space-y-5">
+                <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                  <span className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <GraduationCap className="h-4 w-4 text-[#c48825]" /> Innovation Challenge
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Verified Challenge
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-base font-bold text-[#063028] font-serif">
+                    Interested in Solving this Challenge?
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    Students from partner institutions can collaborate with faculty mentors to build a working prototype addressing this industry problem statement.
+                  </p>
+                  <ul className="space-y-2 text-xs text-stone-700 font-medium">
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c48825] mt-1.5 shrink-0"></span>
+                      <span>Form a multidisciplinary student team (2-4 members)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c48825] mt-1.5 shrink-0"></span>
+                      <span>Connect with your college CII Innovation SPOC</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c48825] mt-1.5 shrink-0"></span>
+                      <span>Submit your solution abstract for CII Industry evaluation</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="pt-2 space-y-2.5 border-t border-stone-100">
+                  <Link
+                    to="/institutions"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
+                  >
+                    <GraduationCap className="h-4 w-4" /> Find Your Partner Institution
+                  </Link>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        showToast('Problem statement link copied to clipboard!', 'success');
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <Share2 className="h-3.5 w-3.5 text-stone-500" /> Share Link
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <Printer className="h-3.5 w-3.5 text-stone-500" /> Print Brief
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Secretariat Support Card */}
+              <div className="bg-[#faf8f4] rounded-2xl border border-stone-200/90 p-5 space-y-2 text-xs text-stone-600">
+                <span className="font-bold text-[#063028] block">Corporate R&amp;D Inquiries</span>
+                <p>
+                  Industrial enterprise seeking to collaborate or modify this problem statement? Contact the CII Secretariat at{' '}
+                  <a href="mailto:contact@ciisic.org" className="text-[#c48825] font-bold hover:underline">
+                    contact@ciisic.org
+                  </a>.
+                </p>
               </div>
             </div>
           )}
