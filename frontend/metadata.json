@@ -1,6 +1,6 @@
 {
-  "name": "Remix: ciisic_frontend",
-  "description": "Imported from GitHub: soumyasingh8268-creator/ciisic_frontend",
+  "name": "CIISIC Platform",
+  "description": "CII Industry-Institute Collaboration Platform for corporate problem statements and academic research partnerships",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,16 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Inter", sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, serif;
+  --font-display: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-brand-blue: #002147;
-  --color-brand-blue-light: #0056b3;
-  --color-brand-gold: #0056b3;
-  --color-brand-gold-dark: #002147;
-  --color-brand-accent: #f1f5f9;
+  --color-brand-green: #063028;
+  --color-brand-green-dark: #04201a;
+  --color-brand-green-light: #edf4f0;
+  --color-brand-green-sage: #e2ece6;
+  --color-brand-gold: #c48825;
+  --color-brand-gold-dark: #a6711c;
+  --color-brand-gold-light: #fef6e7;
+  --color-brand-cream: #faf7f0;
+  --color-brand-card: #ffffff;
+  --color-brand-border: #e8e4dc;
+
+  --color-brand-blue: #063028;
+  --color-brand-blue-light: #0d382d;
+  --color-brand-accent: #edf4f0;
+}
+
+/* Global Typography & Readability Foundation */
+html {
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #292524;
+  line-height: 1.6;
 }
 
 /* Custom styles for animations & layout styling */
@@ -25,7 +49,7 @@
 
 /* Perfect premium enterprise shadows */
 .premium-shadow {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(6, 48, 40, 0.04), 0 10px 20px -5px rgba(6, 48, 40, 0.03), 0 4px 6px -2px rgba(6, 48, 40, 0.02);
 }
 
 .premium-shadow-hover {
@@ -33,7 +57,7 @@
 }
 .premium-shadow-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px rgba(6, 48, 40, 0.04), 0 20px 25px -5px rgba(6, 48, 40, 0.05), 0 10px 10px -5px rgba(6, 48, 40, 0.03);
 }
 
 /* Hide scrollbars but preserve functionality */
@@ -54,8 +78,9 @@
   margin-bottom: 0;
 }
 .html-content h1, .html-content h2, .html-content h3, .html-content h4 {
+  font-family: var(--font-serif);
   font-weight: 700;
-  color: #002147;
+  color: #063028;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
@@ -77,7 +102,7 @@
 }
 .html-content strong {
   font-weight: 700;
-  color: #1e293b;
+  color: #063028;
 }
 .html-content em {
   font-style: italic;

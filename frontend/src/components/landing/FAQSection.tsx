@@ -33,15 +33,15 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/60 scroll-mt-20">
+    <section id="faq" className="py-16 sm:py-24 bg-[#faf8f4] border-t border-[#e8e4dc] scroll-mt-20">
       <div className="max-w-[800px] mx-auto px-6 sm:px-8">
         
         {/* Header Block */}
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf4f0] text-[#063028] text-xs font-semibold tracking-wide">
             FAQ
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#063028] tracking-tight leading-tight font-serif">
             Frequently Asked Questions
           </h2>
         </div>
@@ -53,27 +53,27 @@ export const FAQSection: React.FC = () => {
             return (
               <div 
                 key={idx}
-                className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-350"
+                className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden transition-all duration-300 hover:border-stone-300 shadow-xs"
               >
                 {/* Question Header */}
                 <button
                   type="button"
                   onClick={() => handleToggle(idx)}
-                  className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left font-bold text-slate-900 hover:text-blue-700 transition-colors focus:outline-none cursor-pointer"
+                  className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left font-bold text-[#063028] hover:text-[#c48825] transition-colors focus:outline-none cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <HelpCircle className="h-5 w-5 text-blue-600 shrink-0" />
-                    <span className="text-sm sm:text-base leading-relaxed">{faq.q}</span>
+                    <HelpCircle className="h-5 w-5 text-[#063028] shrink-0" />
+                    <span className="text-base sm:text-lg font-bold text-[#063028] leading-relaxed">{faq.q}</span>
                   </div>
-                  <ChevronDown className={`h-5 w-5 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-600' : ''}`} />
+                  <ChevronDown className={`h-5 w-5 text-stone-500 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#063028]' : ''}`} />
                 </button>
 
                 {/* Answer Content */}
                 <div 
-                  className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 border-t border-slate-100 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}
+                  className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 border-t border-stone-100 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}
                 >
-                  <div className="px-6 py-5 bg-slate-50/50">
-                    <p className="text-sm text-slate-600 leading-relaxed font-semibold">
+                  <div className="px-6 py-5 bg-[#faf8f4]/60">
+                    <p className="text-base text-stone-700 leading-relaxed font-normal">
                       {faq.a}
                     </p>
                   </div>
