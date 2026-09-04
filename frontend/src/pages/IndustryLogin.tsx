@@ -167,25 +167,13 @@ export const IndustryLogin: React.FC = () => {
                 {!isLoading && <ArrowRight className="h-5 w-5" />}
               </button>
 
-              {/* Quick Demo Partner Account Helper */}
-              <div className="pt-3 border-t border-stone-100">
-                <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-2">
-                  Approved Industry Demo Accounts:
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('industry@cii.in');
-                    setPassword('industry123');
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-xl bg-stone-50 hover:bg-[#edf4f0] hover:border-[#063028]/30 border border-stone-200 text-xs font-semibold text-stone-800 transition-all flex items-center justify-between cursor-pointer"
-                >
-                  <div className="truncate">
-                    <strong className="text-stone-900 block font-bold">Tata Motors Ltd</strong>
-                    <span className="text-stone-500 text-[11px]">industry@cii.in</span>
-                  </div>
-                  <span className="text-[#063028] font-bold shrink-0 text-xs bg-white px-2 py-1 rounded border border-stone-200">Auto-fill →</span>
-                </button>
+              <div className="pt-2 text-center">
+                <p className="text-xs text-stone-600">
+                  New enterprise partner?{' '}
+                  <Link to="/industry/register" className="font-bold text-[#c48825] hover:underline inline-flex items-center gap-1">
+                    Register Industry Account <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </p>
               </div>
             </form>
           </div>

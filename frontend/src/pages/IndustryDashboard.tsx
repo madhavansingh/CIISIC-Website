@@ -3,15 +3,30 @@ import { Link } from 'react-router-dom';
 import { 
   Building2, PlusCircle, CheckCircle, Clock, AlertTriangle, FileText, 
   Globe, ChevronRight, FileCheck, X,
-  Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye, Download
+  Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye, Download,
+  GraduationCap, ExternalLink, Award, Sparkles, MessageSquare, Send, CheckSquare, Layers, User, Lock
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { sanitizeHTML, stripHTML } from '../lib/html';
 import { uploadFile } from '../lib/api';
 import { getOriginalFileName } from '../lib/file';
+import { SolutionSubmission, SolutionStatus } from '../types';
+import { ChangePasswordModal } from '../components/common/ChangePasswordModal';
 
 export const IndustryDashboard: React.FC = () => {
-  const { currentUser, submissions, addSubmission, showToast } = useApp();
+  const { currentUser, submissions, addSubmission, showToast, solutions, reviewSolution } = useApp();
+  
+  // Change password modal state
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  // Dashboard tab state
+  const [activeDashboardTab, setActiveDashboardTab] = useState<'statements' | 'solutions'>('statements');
+  const [selectedSolutionForReview, setSelectedSolutionForReview] = useState<SolutionSubmission | null>(null);
+  const [reviewDecision, setReviewDecision] = useState<SolutionStatus>('APPROVED');
+  const [reviewNotes, setReviewNotes] = useState('');
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [solutionSearch, setSolutionSearch] = useState('');
+  const [solutionStatusFilter, setSolutionStatusFilter] = useState<string>('All');
   
   // Dashboard states
   const [currentView, setCurrentView] = useState<'dashboard' | 'form' | 'review' | 'success'>('dashboard');
@@ -82,6 +97,79 @@ export const IndustryDashboard: React.FC = () => {
     pending: mySubmissions.filter((s) => s.status === 'Pending').length,
     approved: mySubmissions.filter((s) => s.status === 'Approved').length,
     rejected: mySubmissions.filter((s) => s.status === 'Rejected').length,
+  };
+
+  // Filter solutions submitted for this industry partner
+  const mySolutions = solutions.filter((sol) => {
+    if (currentUser?.companyName && sol.industryCompanyName.toLowerCase().includes(currentUser.companyName.toLowerCase())) {
+      return true;
+    }
+    return mySubmissions.some(
+      (sub) => sub.id === sol.challengeId || sub.details.title.toLowerCase() === sol.challengeTitle.toLowerCase()
+    );
+  });
+
+  const solutionStats = {
+    total: mySolutions.length,
+    underReview: mySolutions.filter((s) => s.status === 'UNDER_REVIEW' || s.status === 'SUBMITTED').length,
+    approved: mySolutions.filter((s) => s.status === 'APPROVED').length,
+    revisions: mySolutions.filter((s) => s.status === 'REVISION_REQUESTED').length,
+  };
+
+  const getSolutionStatusBadge = (status: SolutionStatus) => {
+    switch (status) {
+      case 'APPROVED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <CheckCircle className="h-3.5 w-3.5 text-emerald-600" /> Shortlisted / Approved
+          </span>
+        );
+      case 'REVISION_REQUESTED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" /> Revision Requested
+          </span>
+        );
+      case 'REJECTED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-800 border border-red-200">
+            <X className="h-3.5 w-3.5 text-red-600" /> Not Selected
+          </span>
+        );
+      case 'UNDER_REVIEW':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+            <Clock className="h-3.5 w-3.5 text-blue-600 animate-pulse" /> Under Review
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">
+            <Clock className="h-3.5 w-3.5 text-purple-600" /> Submitted
+          </span>
+        );
+    }
+  };
+
+  const handleOpenReview = (sol: SolutionSubmission) => {
+    setSelectedSolutionForReview(sol);
+    setReviewDecision(sol.status === 'SUBMITTED' ? 'APPROVED' : sol.status);
+    setReviewNotes(sol.industryFeedback || '');
+  };
+
+  const handleSaveReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSolutionForReview) return;
+    setIsReviewing(true);
+    try {
+      await reviewSolution(selectedSolutionForReview.id, reviewDecision, reviewNotes);
+      showToast(`Solution evaluation saved as ${reviewDecision.replace('_', ' ')}.`, 'success');
+      setSelectedSolutionForReview(null);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update evaluation.', 'error');
+    } finally {
+      setIsReviewing(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -365,19 +453,28 @@ export const IndustryDashboard: React.FC = () => {
           </p>
         </div>
 
-        {/* Primary Action Button */}
-        {currentView === 'dashboard' && (
+        {/* Actions */}
+        <div className="flex items-center gap-3 shrink-0">
           <button
-            onClick={() => {
-              setCurrentView('form');
-              scrollToForm();
-            }}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer shrink-0"
-            id="primary-action-btn"
+            onClick={() => setIsPasswordModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 text-xs font-bold rounded-xl transition-all shadow-2xs cursor-pointer"
           >
-            <PlusCircle className="h-4.5 w-4.5" /> Submit Problem Statement
+            <Lock className="h-4 w-4 text-[#c48825]" /> Change Password
           </button>
-        )}
+
+          {currentView === 'dashboard' && (
+            <button
+              onClick={() => {
+                setCurrentView('form');
+                scrollToForm();
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#063028] hover:bg-[#04201a] text-white text-sm font-bold rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
+              id="primary-action-btn"
+            >
+              <PlusCircle className="h-4.5 w-4.5" /> Submit Problem Statement
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Corporate Profile Summary - Responsive Grid Layout */}
@@ -431,133 +528,483 @@ export const IndustryDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* DASHBOARD VIEW - Filed Statements ledger */}
+      {/* DASHBOARD VIEW - Filed Statements ledger & Received Solutions */}
       {currentView === 'dashboard' && (
         <div className="space-y-6 animate-fade-in" id="dashboard-ledger">
-          {/* Submissions Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
-              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Submissions</div>
-              <div className="text-3xl font-extrabold text-[#063028] mt-1 font-serif">{stats.total}</div>
-            </div>
+          {/* Main Tab Navigation */}
+          <div className="flex border-b border-stone-200 gap-6">
+            <button
+              onClick={() => setActiveDashboardTab('statements')}
+              className={`pb-3 text-sm sm:text-base font-bold transition-all relative flex items-center gap-2 cursor-pointer ${
+                activeDashboardTab === 'statements'
+                  ? 'text-[#063028] border-b-2 border-[#063028]'
+                  : 'text-stone-500 hover:text-stone-800'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Posted Problem Statements
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#edf4f0] text-[#063028]">
+                {stats.total}
+              </span>
+            </button>
 
-            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
-              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Approved for Distribution</div>
-              <div className="text-3xl font-extrabold text-emerald-700 mt-1 font-serif">{stats.approved}</div>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
-              <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Pending Review</div>
-              <div className="text-3xl font-extrabold text-amber-700 mt-1 font-serif">{stats.pending}</div>
-            </div>
+            <button
+              onClick={() => setActiveDashboardTab('solutions')}
+              className={`pb-3 text-sm sm:text-base font-bold transition-all relative flex items-center gap-2 cursor-pointer ${
+                activeDashboardTab === 'solutions'
+                  ? 'text-[#063028] border-b-2 border-[#063028]'
+                  : 'text-stone-500 hover:text-stone-800'
+              }`}
+            >
+              <GraduationCap className="h-4 w-4" />
+              Student Solutions Received
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                {mySolutions.length}
+              </span>
+            </button>
           </div>
 
-          {/* Table/List Header */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-[#063028] font-serif">
-                Submitted Problem Statements
-              </h2>
-              <span className="text-sm font-semibold text-stone-500">
-                Showing {mySubmissions.length} Statements
-              </span>
-            </div>
-
-            {mySubmissions.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center space-y-4">
-                <FileText className="h-12 w-12 text-stone-300 mx-auto" />
-                <div className="space-y-1">
-                  <p className="font-bold text-stone-800 text-base">No Problem Statements Filed Yet</p>
-                  <p className="text-sm text-stone-600 max-w-sm mx-auto">Get started by creating your first problem statement to receive solutions from engineering institutions.</p>
+          {/* TAB 1: PROBLEM STATEMENTS */}
+          {activeDashboardTab === 'statements' && (
+            <>
+              {/* Submissions Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Submissions</div>
+                  <div className="text-3xl font-extrabold text-[#063028] mt-1 font-serif">{stats.total}</div>
                 </div>
-                <button
-                  onClick={() => setCurrentView('form')}
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-[#063028] rounded-xl hover:bg-[#04201a] transition-all cursor-pointer shadow-sm"
-                >
-                  <PlusCircle className="h-4.5 w-4.5" /> Submit First Statement
-                </button>
+
+                <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Approved for Distribution</div>
+                  <div className="text-3xl font-extrabold text-emerald-700 mt-1 font-serif">{stats.approved}</div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Pending Review</div>
+                  <div className="text-3xl font-extrabold text-amber-700 mt-1 font-serif">{stats.pending}</div>
+                </div>
               </div>
-            ) : (
+
+              {/* Table/List Header */}
               <div className="space-y-4">
-                {mySubmissions.map((sub) => (
-                  <div key={sub.id} className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-4 hover:border-stone-300 transition-all">
-                    <div className="flex justify-between items-start gap-4">
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-mono font-bold text-[#063028] bg-[#edf4f0] border border-[#063028]/20 px-2 py-0.5 rounded">REF ID: {sub.id}</span>
-                          <span className="text-xs text-stone-500 font-medium">Filed on {new Date(sub.submittedDate).toLocaleDateString()}</span>
-                        </div>
-                        <h3 className="text-lg font-bold text-[#063028] hover:text-[#c48825] transition-colors mt-1">
-                          {sub.details.title}
-                        </h3>
-                      </div>
-                      <div className="shrink-0">{getStatusBadge(sub.status)}</div>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-[#063028] font-serif">
+                    Submitted Problem Statements
+                  </h2>
+                  <span className="text-sm font-semibold text-stone-500">
+                    Showing {mySubmissions.length} Statements
+                  </span>
+                </div>
+
+                {mySubmissions.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center space-y-4">
+                    <FileText className="h-12 w-12 text-stone-300 mx-auto" />
+                    <div className="space-y-1">
+                      <p className="font-bold text-stone-800 text-base">No Problem Statements Filed Yet</p>
+                      <p className="text-sm text-stone-600 max-w-sm mx-auto">Get started by creating your first problem statement to receive solutions from engineering institutions.</p>
                     </div>
+                    <button
+                      onClick={() => setCurrentView('form')}
+                      className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-[#063028] rounded-xl hover:bg-[#04201a] transition-all cursor-pointer shadow-sm"
+                    >
+                      <PlusCircle className="h-4.5 w-4.5" /> Submit First Statement
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {mySubmissions.map((sub) => (
+                      <div key={sub.id} className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-4 hover:border-stone-300 transition-all">
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs font-mono font-bold text-[#063028] bg-[#edf4f0] border border-[#063028]/20 px-2 py-0.5 rounded">REF ID: {sub.id}</span>
+                              <span className="text-xs text-stone-500 font-medium">Filed on {new Date(sub.submittedDate).toLocaleDateString()}</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-[#063028] hover:text-[#c48825] transition-colors mt-1">
+                              {sub.details.title}
+                            </h3>
+                          </div>
+                          <div className="shrink-0">{getStatusBadge(sub.status)}</div>
+                        </div>
 
-                    <p className="text-sm text-stone-600 line-clamp-2 leading-relaxed">
-                      {stripHTML(sub.details.description)}
-                    </p>
+                        <p className="text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                          {stripHTML(sub.details.description)}
+                        </p>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-xs bg-stone-100 border border-stone-200 text-stone-700 font-semibold px-2.5 py-1 rounded">
-                          {sub.technical.difficultyLevel} Tier
-                        </span>
-                        <span className="text-xs bg-[#edf4f0] text-[#063028] font-bold px-2.5 py-1 rounded">
-                          {sub.company.industrySector}
-                        </span>
-                        {sub.additional.fileAttachmentName && (
-                          <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-200 text-stone-700 px-2.5 py-1 rounded text-xs font-bold max-w-[220px] sm:max-w-[320px]">
-                            <span>📄</span>
-                            <a
-                              href={sub.additional.fileAttachmentName}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[#063028] hover:underline truncate"
-                              title={getOriginalFileName(sub.additional.fileAttachmentName)}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            >
-                              {getOriginalFileName(sub.additional.fileAttachmentName)}
-                            </a>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                window.open(sub.additional.fileAttachmentName, '_blank');
-                              }}
-                              className="p-0.5 hover:bg-stone-200 rounded text-stone-500 hover:text-stone-700 transition-colors shrink-0"
-                              title="Download file"
-                            >
-                              <Download className="h-3.5 w-3.5" />
-                            </button>
+                        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <span className="text-xs bg-stone-100 border border-stone-200 text-stone-700 font-semibold px-2.5 py-1 rounded">
+                              {sub.technical.difficultyLevel} Tier
+                            </span>
+                            <span className="text-xs bg-[#edf4f0] text-[#063028] font-bold px-2.5 py-1 rounded">
+                              {sub.company.industrySector}
+                            </span>
+                            {sub.additional.fileAttachmentName && (
+                              <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-200 text-stone-700 px-2.5 py-1 rounded text-xs font-bold max-w-[220px] sm:max-w-[320px]">
+                                <span>📄</span>
+                                <a
+                                  href={sub.additional.fileAttachmentName}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[#063028] hover:underline truncate"
+                                  title={getOriginalFileName(sub.additional.fileAttachmentName)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  {getOriginalFileName(sub.additional.fileAttachmentName)}
+                                </a>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open(sub.additional.fileAttachmentName, '_blank');
+                                  }}
+                                  className="p-0.5 hover:bg-stone-200 rounded text-stone-500 hover:text-stone-700 transition-colors shrink-0"
+                                  title="Download file"
+                                >
+                                  <Download className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          <Link 
+                            to={`/details/${sub.id}`} 
+                            className="inline-flex items-center gap-1 text-sm font-bold text-[#c48825] hover:text-[#a6711c] hover:underline"
+                          >
+                            View Full Details <ChevronRight className="h-4 w-4" />
+                          </Link>
+                        </div>
+
+                        {/* Admin remarks display */}
+                        {sub.reviewRemarks && (
+                          <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 space-y-1">
+                            <span className="text-xs font-bold uppercase tracking-wider text-[#063028] block">CII Administrator Remarks</span>
+                            <p className="text-sm text-stone-700 leading-relaxed italic font-medium">
+                              &quot;{sub.reviewRemarks}&quot;
+                            </p>
                           </div>
                         )}
                       </div>
-
-                      <Link 
-                        to={`/details/${sub.id}`} 
-                        className="inline-flex items-center gap-1 text-sm font-bold text-[#c48825] hover:text-[#a6711c] hover:underline"
-                      >
-                        View Full Details <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </div>
-
-                    {/* Admin remarks display */}
-                    {sub.reviewRemarks && (
-                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 space-y-1">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#063028] block">CII Administrator Remarks</span>
-                        <p className="text-sm text-stone-700 leading-relaxed italic font-medium">
-                          &quot;{sub.reviewRemarks}&quot;
-                        </p>
-                      </div>
-                    )}
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
+
+          {/* TAB 2: INSTITUTIONAL SOLUTIONS RECEIVED */}
+          {activeDashboardTab === 'solutions' && (
+            <div className="space-y-6">
+              {/* Solution Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Received</div>
+                  <div className="text-2xl font-extrabold text-[#063028] mt-1 font-serif">{solutionStats.total}</div>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Pending Evaluation</div>
+                  <div className="text-2xl font-extrabold text-blue-700 mt-1 font-serif">{solutionStats.underReview}</div>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Shortlisted / Approved</div>
+                  <div className="text-2xl font-extrabold text-emerald-700 mt-1 font-serif">{solutionStats.approved}</div>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-xs">
+                  <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">Revisions Requested</div>
+                  <div className="text-2xl font-extrabold text-amber-700 mt-1 font-serif">{solutionStats.revisions}</div>
+                </div>
+              </div>
+
+              {/* Filter bar */}
+              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <input
+                  type="text"
+                  value={solutionSearch}
+                  onChange={(e) => setSolutionSearch(e.target.value)}
+                  placeholder="Search by team, institution, or solution title..."
+                  className="w-full sm:w-80 px-4 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-[#063028]"
+                />
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <span className="text-xs font-semibold text-stone-500">Status:</span>
+                  <select
+                    value={solutionStatusFilter}
+                    onChange={(e) => setSolutionStatusFilter(e.target.value)}
+                    className="px-3 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-[#063028]"
+                  >
+                    <option value="All">All Statuses</option>
+                    <option value="SUBMITTED">Submitted</option>
+                    <option value="UNDER_REVIEW">Under Review</option>
+                    <option value="APPROVED">Approved / Shortlisted</option>
+                    <option value="REVISION_REQUESTED">Revision Requested</option>
+                    <option value="REJECTED">Not Selected</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Solutions List */}
+              {mySolutions.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center space-y-4">
+                  <GraduationCap className="h-12 w-12 text-stone-300 mx-auto" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-stone-800 text-base">No Solutions Submitted Yet</p>
+                    <p className="text-sm text-stone-600 max-w-md mx-auto">
+                      Academic institutions and student engineering teams across Madhya Pradesh are currently reviewing your approved problem statements. Once solutions are filed, they will appear here for your review and pilot shortlisting.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {mySolutions
+                    .filter((sol) => {
+                      const matchesQuery = 
+                        sol.title.toLowerCase().includes(solutionSearch.toLowerCase()) ||
+                        sol.institutionName.toLowerCase().includes(solutionSearch.toLowerCase()) ||
+                        sol.teamName.toLowerCase().includes(solutionSearch.toLowerCase()) ||
+                        sol.challengeTitle.toLowerCase().includes(solutionSearch.toLowerCase());
+                      const matchesFilter = solutionStatusFilter === 'All' || sol.status === solutionStatusFilter;
+                      return matchesQuery && matchesFilter;
+                    })
+                    .map((sol) => (
+                      <div key={sol.id} className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-5 hover:border-stone-300 transition-all">
+                        {/* Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-[#063028] bg-[#edf4f0] px-2 py-0.5 rounded">
+                                Problem: {sol.challengeTitle}
+                              </span>
+                              <span className="text-xs text-stone-500">
+                                Submitted on {new Date(sol.submittedAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <h3 className="text-xl font-bold text-[#063028] mt-1 font-serif">
+                              {sol.title}
+                            </h3>
+                          </div>
+                          <div className="shrink-0">
+                            {getSolutionStatusBadge(sol.status)}
+                          </div>
+                        </div>
+
+                        {/* Institution & Team Credentials */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-stone-50 border border-stone-200/80 text-xs">
+                          <div>
+                            <div className="flex items-center gap-2 font-bold text-stone-800 mb-1">
+                              <GraduationCap className="w-4 h-4 text-[#063028]" />
+                              {sol.institutionName}
+                            </div>
+                            <p className="text-stone-600">
+                              <strong className="text-stone-800">Team:</strong> {sol.teamName}
+                            </p>
+                            <p className="text-stone-600 mt-0.5">
+                              <strong className="text-stone-800">Lead:</strong> {sol.teamLead.name} ({sol.teamLead.email}) — {sol.teamLead.department}
+                            </p>
+                            {sol.teamMembers.length > 0 && (
+                              <p className="text-stone-500 mt-0.5">
+                                + {sol.teamMembers.length} additional team members
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 font-bold text-stone-800 mb-1">
+                              <User className="w-4 h-4 text-[#c48825]" />
+                              Faculty Mentor
+                            </div>
+                            <p className="text-stone-700 font-semibold">{sol.facultyMentor.name}</p>
+                            <p className="text-stone-500">{sol.facultyMentor.designation}</p>
+                            <p className="text-stone-500">{sol.facultyMentor.email}</p>
+                          </div>
+                        </div>
+
+                        {/* Summary & Technical Approach */}
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-stone-500 uppercase tracking-wider">
+                            Executive Summary
+                          </p>
+                          <p className="text-sm text-stone-700 leading-relaxed">
+                            {sol.summary}
+                          </p>
+                        </div>
+
+                        {/* Technologies */}
+                        {sol.technologiesUsed && sol.technologiesUsed.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            <span className="text-xs font-bold text-stone-500 mr-1">Stack:</span>
+                            {sol.technologiesUsed.map((tech) => (
+                              <span key={tech} className="px-2 py-0.5 text-xs font-medium bg-[#063028]/10 text-[#063028] rounded">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* External Links & Evaluation Actions */}
+                        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-100">
+                          <div className="flex flex-wrap items-center gap-3">
+                            {sol.demoUrl && (
+                              <a
+                                href={sol.demoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200 transition-colors"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" /> Live Demo / Prototype
+                              </a>
+                            )}
+                            {sol.attachmentUrl && (
+                              <a
+                                href={sol.attachmentUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold border border-stone-200 transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5" /> {sol.documentName || 'Pitch Deck / Report'}
+                              </a>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => handleOpenReview(sol)}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#063028] hover:bg-[#063028]/90 text-white text-xs font-bold shadow-xs cursor-pointer transition-all"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 text-[#c48825]" />
+                            Evaluate &amp; Provide Feedback
+                          </button>
+                        </div>
+
+                        {/* Current Feedback Callout */}
+                        {sol.industryFeedback && (
+                          <div className="p-3 bg-amber-50/70 border border-amber-200/70 rounded-xl text-xs space-y-1">
+                            <span className="font-bold text-[#063028] uppercase tracking-wider block">
+                              Your Evaluator Feedback ({sol.reviewedAt ? new Date(sol.reviewedAt).toLocaleDateString() : 'Active'})
+                            </span>
+                            <p className="text-stone-700 italic">&quot;{sol.industryFeedback}&quot;</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Solution Review Modal */}
+          {selectedSolutionForReview && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+              <div className="bg-white rounded-3xl border border-stone-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
+                <div className="flex justify-between items-start border-b border-stone-100 pb-4">
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#c48825]">
+                      Industrial Evaluation
+                    </span>
+                    <h3 className="text-xl font-bold font-serif text-[#063028] mt-0.5">
+                      {selectedSolutionForReview.title}
+                    </h3>
+                    <p className="text-xs text-stone-500 mt-1">
+                      Submitted by <strong>{selectedSolutionForReview.teamName}</strong> ({selectedSolutionForReview.institutionName})
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedSolutionForReview(null)}
+                    className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Technical Methodology Review */}
+                <div className="space-y-2 p-4 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+                  <div className="font-bold text-stone-700 uppercase tracking-wider">Detailed Technical Approach:</div>
+                  <p className="text-stone-700 whitespace-pre-line leading-relaxed font-mono text-xs">
+                    {selectedSolutionForReview.detailedApproach}
+                  </p>
+                </div>
+
+                <form onSubmit={handleSaveReview} className="space-y-5">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">
+                      Evaluation Decision *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setReviewDecision('APPROVED')}
+                        className={`p-3 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer ${
+                          reviewDecision === 'APPROVED'
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20'
+                            : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                        }`}
+                      >
+                        <CheckCircle className="w-4 h-4 text-emerald-600 mb-1" />
+                        <div>Shortlist / Pilot</div>
+                        <div className="text-[10px] font-normal text-stone-500 mt-0.5">Solution meets criteria</div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setReviewDecision('REVISION_REQUESTED')}
+                        className={`p-3 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer ${
+                          reviewDecision === 'REVISION_REQUESTED'
+                            ? 'bg-amber-50 border-amber-500 text-amber-900 ring-2 ring-amber-500/20'
+                            : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                        }`}
+                      >
+                        <AlertTriangle className="w-4 h-4 text-amber-600 mb-1" />
+                        <div>Request Revision</div>
+                        <div className="text-[10px] font-normal text-stone-500 mt-0.5">Needs clarification</div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setReviewDecision('REJECTED')}
+                        className={`p-3 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer ${
+                          reviewDecision === 'REJECTED'
+                            ? 'bg-red-50 border-red-500 text-red-900 ring-2 ring-red-500/20'
+                            : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                        }`}
+                      >
+                        <X className="w-4 h-4 text-red-600 mb-1" />
+                        <div>Decline Solution</div>
+                        <div className="text-[10px] font-normal text-stone-500 mt-0.5">Not viable for rollout</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                      Feedback &amp; Guidance for the Student Team
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={reviewNotes}
+                      onChange={(e) => setReviewNotes(e.target.value)}
+                      placeholder="Provide constructive technical notes, queries on prototype latency, or pilot testing instructions..."
+                      className="w-full px-4 py-3 rounded-xl border border-stone-300 text-xs focus:outline-none focus:ring-2 focus:ring-[#063028]"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSolutionForReview(null)}
+                      className="px-4 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isReviewing}
+                      className="px-5 py-2.5 rounded-xl bg-[#063028] hover:bg-[#063028]/90 text-white text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                    >
+                      {isReviewing ? 'Saving Evaluation...' : 'Save & Notify Institution'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1087,6 +1534,11 @@ export const IndustryDashboard: React.FC = () => {
 
       </div>
 
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onSuccess={() => showToast('Password successfully updated!', 'success')}
+      />
     </div>
   );
 };
