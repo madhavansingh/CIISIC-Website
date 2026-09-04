@@ -10,6 +10,7 @@ import { SubmitProblem } from './pages/SubmitProblem';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SubmissionDetails } from './pages/SubmissionDetails';
+import { ProblemStatements } from './pages/ProblemStatements';
 
 // Role-based Protected Route for Industry Partners
 const IndustryRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -80,6 +81,10 @@ export default function App() {
             {/* Dedicated Partner Institutions Directory */}
             <Route path="/institutions" element={<Institutions />} />
 
+            {/* Public Problem Statements Repository */}
+            <Route path="/problem-statements" element={<ProblemStatements />} />
+            <Route path="/problems" element={<Navigate to="/problem-statements" replace />} />
+
             {/* Industry Portal Routes */}
             <Route 
               path="/industry/login" 
@@ -123,13 +128,11 @@ export default function App() {
                 </AdminRoute>
               } 
             />
+
+            {/* Publicly Viewable Problem Details */}
             <Route 
               path="/details/:id" 
-              element={
-                <ProtectedRoute>
-                  <SubmissionDetails />
-                </ProtectedRoute>
-              } 
+              element={<SubmissionDetails />} 
             />
 
             {/* Fallback Catch-All */}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, GraduationCap, Users, Brain, ShieldCheck, Lock } from 'lucide-react';
+import { Building2, GraduationCap, Users, Brain, ShieldCheck, Lock, Sparkles } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
   return (
@@ -66,24 +66,35 @@ export const HeroSection: React.FC = () => {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3.5 pt-2">
-                <Link
-                  to="/industry/login"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm sm:text-base font-semibold text-white bg-[#063028] hover:bg-[#04201a] transition-all duration-200 shadow-sm active:scale-98"
-                >
-                  <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M2 8.5L12 3L22 8.5V10H2V8.5ZM4 19H7V11H4V19ZM10 19H14V11H10V19ZM17 19H20V11H17V19ZM2 21H22V20H2V21Z" />
-                  </svg>
-                  <span>Register as Industry</span>
-                </Link>
-                
-                <Link
-                  to="/admin/login"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm sm:text-base font-semibold text-[#063028] bg-white border border-stone-300 hover:bg-stone-50 transition-all duration-200 shadow-sm active:scale-98"
-                >
-                  <ShieldCheck className="h-4.5 w-4.5 text-[#063028]" />
-                  <span>CII Admin</span>
-                </Link>
+              <div className="space-y-3.5 pt-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    to="/problem-statements"
+                    className="inline-flex items-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-[#063028] hover:bg-[#04201a] transition-all duration-200 shadow-sm active:scale-98 whitespace-nowrap"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#c48825]" />
+                    <span>Explore Problem Statements</span>
+                  </Link>
+
+                  <Link
+                    to="/industry/login"
+                    className="inline-flex items-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl text-sm font-bold text-[#063028] bg-white border border-stone-300 hover:bg-stone-50 hover:border-[#063028]/40 transition-all duration-200 shadow-2xs active:scale-98 whitespace-nowrap"
+                  >
+                    <Building2 className="w-4 h-4 text-[#063028]" />
+                    <span>Register as Industry</span>
+                  </Link>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs text-stone-600 pt-0.5">
+                  <span>CII Platform Official?</span>
+                  <Link
+                    to="/admin/login"
+                    className="inline-flex items-center gap-1 font-bold text-[#063028] hover:text-[#c48825] transition-colors hover:underline"
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5 text-[#c48825]" />
+                    <span>Go to Admin Portal &rarr;</span>
+                  </Link>
+                </div>
               </div>
 
             </div>

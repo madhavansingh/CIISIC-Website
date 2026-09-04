@@ -1,5 +1,4 @@
 import { ProblemStatement, User, SubmissionStatus } from '../types';
-import { INITIAL_CHALLENGES, INITIAL_USERS } from '../data/mockData';
 
 /**
  * Base URL comes from VITE_API_URL (e.g., http://localhost:3001)
@@ -18,21 +17,25 @@ export function setAuthToken(token: string | null) {
   }
 }
 
-// Local mock database helpers
+// Local database helpers
 function getLocalChallenges(): ProblemStatement[] {
   const saved = localStorage.getItem('ciisic_submissions');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+      if (Array.isArray(parsed)) {
+        // Purge legacy mock challenge IDs from early development
+        const filtered = parsed.filter((c: any) => !c?.id?.startsWith?.('CII-2025-010'));
+        if (filtered.length !== parsed.length) {
+          localStorage.setItem('ciisic_submissions', JSON.stringify(filtered));
+        }
+        return filtered;
       }
     } catch {
       // ignore
     }
   }
-  localStorage.setItem('ciisic_submissions', JSON.stringify(INITIAL_CHALLENGES));
-  return INITIAL_CHALLENGES;
+  return [];
 }
 
 function saveLocalChallenges(challenges: ProblemStatement[]) {
@@ -100,23 +103,17 @@ export async function login(email: string, password: string): Promise<User> {
       industry: 'Industry-Academia Relations',
     };
   } else {
-    // Check known initial users or construct industry profile
-    const existing = INITIAL_USERS.find(u => u.email.toLowerCase() === normalizedEmail);
-    if (existing) {
-      user = existing;
-    } else {
-      const domainName = normalizedEmail.split('@')[1]?.split('.')[0] || 'Enterprise';
-      const formattedCompany = domainName.charAt(0).toUpperCase() + domainName.slice(1) + ' Ltd';
-      user = {
-        id: 'usr_ind_' + Date.now().toString(36),
-        name: normalizedEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        email: normalizedEmail,
-        role: 'industry',
-        companyName: formattedCompany,
-        designation: 'Corporate R&D Lead',
-        industry: 'Industrial Innovation',
-      };
-    }
+    const domainName = normalizedEmail.split('@')[1]?.split('.')[0] || 'Enterprise';
+    const formattedCompany = domainName.charAt(0).toUpperCase() + domainName.slice(1) + ' Ltd';
+    user = {
+      id: 'usr_ind_' + Date.now().toString(36),
+      name: normalizedEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      email: normalizedEmail,
+      role: 'industry',
+      companyName: formattedCompany,
+      designation: 'Corporate R&D Lead',
+      industry: 'Industrial Innovation',
+    };
   }
 
   const mockToken = 'mock_jwt_' + btoa(JSON.stringify(user));
@@ -174,9 +171,7 @@ export async function fetchChallenges(): Promise<ProblemStatement[]> {
     try {
       const res = await fetchJSON<{ data?: any[]; [key: string]: any }>(`${API_BASE}/api/challenges`);
       const challengesList = Array.isArray(res) ? res : (res?.data || []);
-      if (challengesList.length > 0) {
-        return challengesList.map(mapBackendToProblemStatement);
-      }
+      return challengesList.map(mapBackendToProblemStatement);
     } catch (e) {
       console.warn('Backend fetchChallenges failed, falling back to local data:', e);
     }
@@ -412,18 +407,34 @@ export async function uploadFile(file: File, type: 'LOGO' | 'DOCUMENT'): Promise
 }
 
 /** Mappers */
+function formatThemeToSector(theme?: string): string {
+  if (!theme) return 'General Innovation';
+  const map: Record<string, string> = {
+    'AI_IN_BUSINESS': 'Artificial Intelligence',
+    'AGRITECH': 'Agritech',
+    'RESEARCH_INNOVATION': 'Research & Innovation',
+    'FAMILY_BUSINESS': 'Manufacturing & Enterprise',
+    'TALENT_READINESS': 'Talent & Education',
+    'SKILL_DEVELOPMENT': 'Skill Development',
+    'STARTUP': 'Startup & Incubation',
+  };
+  return map[theme] || theme;
+}
+
 function mapBackendToProblemStatement(backend: any): ProblemStatement {
+  const sectorName = formatThemeToSector(backend.domain);
+  const company = backend.organizationName || backend.industry?.companyName || 'Corporate Partner';
   return {
     id: backend.id,
     company: {
-      industryName: backend.domain ?? '',
-      companyName: backend.organizationName ?? '',
+      industryName: sectorName,
+      companyName: company,
       representativeName: backend.industry?.representativeName ?? '',
-      designation: backend.industry?.designation ?? '',
+      designation: backend.industry?.designation ?? 'Corporate R&D',
       email: backend.industry?.email ?? '',
       phone: backend.industry?.phone ?? '',
       website: backend.industry?.website ?? '',
-      industrySector: backend.domain ?? '',
+      industrySector: sectorName,
     },
     details: {
       title: backend.title ?? '',

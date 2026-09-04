@@ -35,8 +35,12 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
   // Active section scroll highlighter
   useEffect(() => {
-    if (location.pathname !== '/') {
-      setActiveSection('institutions'); // Highlight institutions as the active navigation item when viewing that page
+    if (location.pathname === '/institutions') {
+      setActiveSection('institutions');
+      return;
+    }
+    if (location.pathname === '/problem-statements' || location.pathname.startsWith('/details')) {
+      setActiveSection('problem-statements');
       return;
     }
 
@@ -177,10 +181,10 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       {/* Sticky Premium Navbar - Full Width & Adaptive */}
       <nav id="platform-navbar" className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#e8e4dc] shadow-xs w-full">
-        <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-          <div className="flex justify-between items-center h-20 w-full">
+        <div className="w-full px-4 sm:px-6 lg:px-6 xl:px-8 2xl:px-10">
+          <div className="flex justify-between items-center h-18 w-full">
             {/* Logo and Brand */}
-            <div className="flex items-center shrink-0 pr-2 lg:pr-3 xl:pr-6">
+            <div className="flex items-center shrink-0 pr-2 lg:pr-3 xl:pr-4">
               <Link to="/" className="shrink-0 flex items-center gap-2.5 sm:gap-3">
                 <CiiLogo size="md" />
                 <div className="flex flex-col justify-center leading-tight">
@@ -195,14 +199,14 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center justify-center flex-1 mx-1 lg:mx-2 xl:mx-4 space-x-0.5 xl:space-x-1.5 2xl:space-x-3">
+            <div className="hidden lg:flex items-center justify-center flex-1 mx-1 lg:mx-2 xl:mx-3 space-x-0.5 xl:space-x-1">
               {!currentUser && (
                 <>
                   <button
                     onClick={() => handleNavClick('hero')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'hero' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
@@ -210,9 +214,9 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   </button>
                   <button
                     onClick={() => handleNavClick('about-ciisic')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'about-ciisic' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
@@ -220,19 +224,29 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   </button>
                   <button
                     onClick={() => handleNavClick('partner-institutions')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'partner-institutions' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
                     Institutions
                   </button>
+                  <Link
+                    to="/problem-statements"
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      activeSection === 'problem-statements' || location.pathname === '/problem-statements' || location.pathname.startsWith('/details')
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
+                        : 'text-stone-700 hover:text-[#063028]'
+                    }`}
+                  >
+                    Problem Statements
+                  </Link>
                   <button
                     onClick={() => handleNavClick('our-ecosystem')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'our-ecosystem' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
@@ -240,9 +254,9 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   </button>
                   <button
                     onClick={() => handleNavClick('how-it-works')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'how-it-works' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
@@ -250,9 +264,9 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   </button>
                   <button
                     onClick={() => handleNavClick('get-involved')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                       activeSection === 'get-involved' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
                         : 'text-stone-700 hover:text-[#063028]'
                     }`}
                   >
@@ -263,18 +277,18 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             </div>
 
             {/* Desktop CTA buttons on the right */}
-            <div className="hidden lg:flex items-center space-x-2 xl:space-x-3 shrink-0 pl-1 xl:pl-4">
+            <div className="hidden lg:flex items-center space-x-2 shrink-0 pl-1 xl:pl-3">
               {!currentUser ? (
                 <>
                   <Link
                     to="/industry/login"
-                    className="px-3 xl:px-4 py-2 xl:py-2.5 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-sm font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
+                    className="px-3 xl:px-3.5 py-1.5 xl:py-2 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
                   >
                     Register as Industry
                   </Link>
                   <Link
                     to="/admin/login"
-                    className="px-3.5 xl:px-5 py-2 xl:py-2.5 bg-[#063028] text-white text-xs xl:text-sm font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
+                    className="px-3 xl:px-3.5 py-1.5 xl:py-2 bg-[#063028] text-white text-xs xl:text-[13px] font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
                   >
                     CII Admin
                   </Link>
@@ -337,6 +351,17 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     Institutions
                   </button>
+                  <Link
+                    to="/problem-statements"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
+                      location.pathname === '/problem-statements' || location.pathname.startsWith('/details')
+                        ? 'text-[#063028] bg-[#edf4f0] font-bold'
+                        : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
+                    }`}
+                  >
+                    Problem Statements
+                  </Link>
                   <button
                     onClick={() => handleNavClick('our-ecosystem')}
                     className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
@@ -387,6 +412,13 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                     className="block px-3 py-2 rounded-md text-base font-bold text-[#063028] hover:bg-stone-50"
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/problem-statements"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-base font-bold text-stone-700 hover:bg-stone-50"
+                  >
+                    Problem Statements
                   </Link>
                   {currentUser.role === 'industry' && (
                     <Link
