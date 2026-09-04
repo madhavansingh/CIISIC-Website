@@ -95,16 +95,9 @@ export function serializeUser(user: any): SafeUser {
 export function serializeChallenge(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   challenge: any,
-  requestingRole: Role,
+  requestingRole?: Role,
   requestingUserId?: string
 ): SafeChallenge {
-  const isBudgetVisible =
-    requestingRole === "SUPER_ADMIN" ||
-    requestingRole === "CII_ADMIN" ||
-    requestingRole === "INSTITUTION_SPOC" ||
-    (requestingRole === "INDUSTRY_SPOC" &&
-      challenge.industryProfile?.userId === requestingUserId);
-
   return {
     id: challenge.id,
     title: challenge.title,
@@ -113,7 +106,7 @@ export function serializeChallenge(
     domain: challenge.domain,
     status: challenge.status,
     deadline: challenge.deadline,
-    budgetRange: isBudgetVisible ? challenge.budgetRange : undefined,
+    budgetRange: challenge.budgetRange ?? null,
     tags: challenge.tags ?? [],
     viewCount: challenge.viewCount,
     createdAt: challenge.createdAt,
