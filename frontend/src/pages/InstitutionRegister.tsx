@@ -63,6 +63,14 @@ export const InstitutionRegister: React.FC = () => {
       setError('Password must be at least 8 characters long.');
       return;
     }
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter.');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number.');
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -350,6 +358,7 @@ export const InstitutionRegister: React.FC = () => {
                       className="block w-full pl-10 pr-4 py-3 border border-stone-300 rounded-xl text-sm font-medium text-stone-900 bg-white focus:outline-none focus:border-[#063028]"
                     />
                   </div>
+                  <p className="text-[11px] text-stone-400 pl-1">Min 8 chars, must include an uppercase letter and a number.</p>
                 </div>
 
                 <div className="space-y-1.5 text-left">
