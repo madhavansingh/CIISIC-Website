@@ -23,6 +23,7 @@
     "react-dom": "^19.0.1",
     "react-hook-form": "^7.81.0",
     "react-router-dom": "^7.18.1",
+    "swiper": "^14.2.0",
     "vite": "^6.2.3",
     "zod": "^4.4.3"
   },

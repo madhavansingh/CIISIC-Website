@@ -304,12 +304,6 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     Industry Login
                   </Link>
-                  <Link
-                    to="/admin/login"
-                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 bg-[#063028] text-white text-xs xl:text-[13px] font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
-                  >
-                    CII Admin
-                  </Link>
                 </>
               ) : (
                 <Link
@@ -426,13 +420,6 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                       className="block w-full py-2.5 rounded-lg text-base font-semibold border border-stone-800 text-stone-900 text-center hover:bg-stone-50 transition-all cursor-pointer"
                     >
                       Industry Login
-                    </Link>
-                    <Link
-                      to="/admin/login"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block w-full py-2.5 rounded-lg text-base font-semibold bg-[#063028] text-white text-center hover:bg-[#04201a] transition-all cursor-pointer shadow-xs"
-                    >
-                      CII Admin
                     </Link>
                   </div>
                 </>

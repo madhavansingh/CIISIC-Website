@@ -10,11 +10,11 @@ export const FooterSection: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#04201a] text-stone-300 border-t border-[#063028] pt-16 sm:pt-20 pb-10 sm:pb-12 text-left">
+    <footer className="bg-[#04201a] text-stone-300 border-t border-[#063028] pt-16 sm:pt-20 pb-12 text-left">
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-[#063028]/80">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-4">
           
           {/* Logo & Description Column */}
           <div className="space-y-4 col-span-1 md:col-span-1">
@@ -163,15 +163,6 @@ export const FooterSection: React.FC = () => {
 
         </div>
 
-        {/* Copyright & Info Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-stone-400 font-semibold uppercase tracking-wider gap-4">
-          <p className="text-center sm:text-left">
-            © 2026 CII Student Innovation Challenge (CIISIC)
-          </p>
-          <p className="text-stone-400">
-            Platform Edition • Powered by Oriental Group
-          </p>
-        </div>
 
       </div>
     </footer>

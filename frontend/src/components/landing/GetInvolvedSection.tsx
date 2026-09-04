@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, ShieldCheck, ArrowRight, Check } from 'lucide-react';
+import { Building2, University, ArrowRight } from 'lucide-react';
 
 export const GetInvolvedSection: React.FC = () => {
   const handleScrollTo = (id: string) => {
@@ -79,51 +79,52 @@ export const GetInvolvedSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 2: CII Platform Admin */}
+
+          {/* Card 2: Become a Partner Institution */}
           <div className="bg-white border border-stone-200/90 rounded-2xl sm:rounded-[24px] p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-stone-300 transition-all duration-300 relative overflow-hidden group">
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#c48825]"></div>
             
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <div className="p-3.5 bg-[#fef6e7] text-[#c48825] rounded-2xl group-hover:bg-[#c48825] group-hover:text-white transition-all duration-300 shrink-0">
-                  <ShieldCheck className="h-7 w-7" />
+                  <University className="h-7 w-7" />
                 </div>
                 <div>
                   <span className="text-xs font-bold uppercase text-[#a6711c] tracking-wider block">
-                    Ecosystem Control
+                    Academic Partnership
                   </span>
                   <h3 className="text-2xl font-bold text-[#063028] font-serif">
-                    CII Platform Admin
+                    Become a Partner Institution
                   </h3>
                 </div>
               </div>
 
               <p className="text-base text-stone-700 leading-relaxed font-normal">
-                Review submitted industry challenges, manage partner institutions and Excellence Cells, and coordinate ecosystem engagements.
+                Empower your students with real industry challenges. Partner institutions gain access to curated problem statements, mentor networks, and structured innovation programmes.
               </p>
 
               <ul className="space-y-3 pt-2">
                 <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
                   <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
-                  <span>Centralized challenge review &amp; routing</span>
+                  <span>Access to live industry problem statements</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
                   <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
-                  <span>Multi-institution coordination dashboard</span>
+                  <span>Faculty-guided student team coordination</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm sm:text-base text-stone-700 font-medium">
                   <div className="h-5 w-5 rounded-full bg-[#fef6e7] text-[#c48825] flex items-center justify-center text-xs font-bold shrink-0">✓</div>
-                  <span>Secure access to platform insights</span>
+                  <span>Progress dashboards & submission tracking</span>
                 </li>
               </ul>
             </div>
 
             <div className="pt-8">
               <Link
-                to="/admin/login"
+                to="/institution/login"
                 className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-[#c48825] hover:bg-[#b0781e] text-white text-sm sm:text-base font-bold uppercase tracking-wider rounded-xl transition-colors shadow-xs"
               >
-                Access Admin Portal <ArrowRight className="h-4.5 w-4.5" />
+                Enter Institution Portal <ArrowRight className="h-4.5 w-4.5" />
               </Link>
             </div>
           </div>
