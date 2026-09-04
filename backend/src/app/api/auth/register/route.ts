@@ -67,6 +67,8 @@ export async function POST(req: NextRequest) {
       return badRequest("Institution SPOCs must provide their institution ID");
     }
 
+    const requiresApproval = data.role === "INDUSTRY_SPOC" || data.role === "INSTITUTION_SPOC";
+
     // Create user + profile in transaction
     const user = await prisma.$transaction(async (tx) => {
       const newUser = await tx.user.create({
@@ -75,6 +77,8 @@ export async function POST(req: NextRequest) {
           name: data.name,
           role: data.role,
           passwordHash,
+          isActive: !requiresApproval,
+          approvalStatus: requiresApproval ? "PENDING" : "APPROVED",
         },
       });
 
@@ -100,12 +104,34 @@ export async function POST(req: NextRequest) {
           },
         });
       } else if (data.role === "INSTITUTION_SPOC") {
+        let instId = data.spocInstitutionId || "Partner Institution";
+        const found = await tx.institution.findFirst({
+          where: {
+            OR: [
+              { id: instId },
+              { name: { equals: instId, mode: "insensitive" } },
+            ],
+          },
+        });
+
+        if (found) {
+          instId = found.id;
+        } else {
+          const createdInst = await tx.institution.create({
+            data: {
+              name: instId,
+              city: "Madhya Pradesh",
+            },
+          });
+          instId = createdInst.id;
+        }
+
         await tx.institutionProfile.create({
           data: {
             userId: newUser.id,
-            institutionId: data.spocInstitutionId!,
-            designation: data.designation ?? "SPOC",
-            department: data.department ?? "Administration",
+            institutionId: instId,
+            designation: data.designation ?? "CII SPOC",
+            department: data.department ?? "Engineering",
           },
         });
       }
@@ -129,6 +155,8 @@ export async function POST(req: NextRequest) {
       email: user.email,
       name: user.name,
       role: user.role,
+      approvalStatus: user.approvalStatus,
+      requiresApproval,
     });
   } catch (err) {
     console.error("[POST /api/auth/register]", err);

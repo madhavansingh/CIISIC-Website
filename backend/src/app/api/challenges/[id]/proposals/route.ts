@@ -139,8 +139,8 @@ export async function POST(
     const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) return unauthorized();
-    if (session.user.role !== "STUDENT") {
-      return forbidden("Only students can submit proposals");
+    if (session.user.role !== "STUDENT" && session.user.role !== "INSTITUTION_SPOC") {
+      return forbidden("Only students or institutions can submit proposals");
     }
 
     const challenge = await prisma.challenge.findUnique({ where: { id } });
@@ -152,9 +152,33 @@ export async function POST(
       return badRequest("The deadline for this challenge has passed");
     }
 
-    const studentProfile = await prisma.studentProfile.findUnique({
+    let studentProfile = await prisma.studentProfile.findUnique({
       where: { userId: session.user.id },
     });
+
+    if (!studentProfile && session.user.role === "INSTITUTION_SPOC") {
+      const instProfile = await prisma.institutionProfile.findUnique({
+        where: { userId: session.user.id },
+      });
+      if (!instProfile) {
+        return badRequest("Institution profile not found");
+      }
+      studentProfile = await prisma.studentProfile.findFirst({
+        where: { institutionId: instProfile.institutionId },
+      });
+      if (!studentProfile) {
+        studentProfile = await prisma.studentProfile.create({
+          data: {
+            userId: session.user.id,
+            institutionId: instProfile.institutionId,
+            enrollmentNo: `INST-${Date.now().toString(36).toUpperCase()}`,
+            department: instProfile.department || "Engineering",
+            yearOfStudy: 4,
+          },
+        });
+      }
+    }
+
     if (!studentProfile) {
       return badRequest("Student profile not found — please complete registration");
     }

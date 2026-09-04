@@ -709,26 +709,51 @@ export const SubmissionDetails: React.FC = () => {
                 </div>
 
                 <div className="pt-2 space-y-2.5 border-t border-stone-100">
-                  <Link
-                    to="/institutions"
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
-                  >
-                    <GraduationCap className="h-4 w-4" /> Find Your Partner Institution
-                  </Link>
+                  {currentUser?.role === 'institution' ? (
+                    <>
+                      <Link
+                        to={`/institution/dashboard?assignChallengeId=${submission.id}`}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
+                      >
+                        <GraduationCap className="h-4 w-4 text-[#c48825]" /> Assign to Student Team
+                      </Link>
+                      <Link
+                        to={`/institution/submit-solution/${submission.id}`}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[#c48825] hover:bg-[#b0781e] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
+                      >
+                        Submit Solution Proposal
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to={`/institution/login?redirect=/institution/dashboard?assignChallengeId=${submission.id}`}
+                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#063028] hover:bg-[#04201a] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
+                      >
+                        <GraduationCap className="h-4 w-4 text-[#c48825]" /> Institution / Team Login to Assign
+                      </Link>
+                      <Link
+                        to="/institutions"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold transition-all"
+                      >
+                        Browse Partner Institutions
+                      </Link>
+                    </>
+                  )}
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 pt-1">
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(window.location.href);
                         showToast('Problem statement link copied to clipboard!', 'success');
                       }}
-                      className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 py-2 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
                     >
                       <Share2 className="h-3.5 w-3.5 text-stone-500" /> Share Link
                     </button>
                     <button
                       onClick={() => window.print()}
-                      className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 py-2 px-3 bg-stone-50 hover:bg-stone-100 border border-stone-300 text-stone-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
                     >
                       <Printer className="h-3.5 w-3.5 text-stone-500" /> Print Brief
                     </button>

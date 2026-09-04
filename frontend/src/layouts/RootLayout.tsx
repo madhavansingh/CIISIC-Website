@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, Building, ShieldCheck, LayoutDashboard, PlusCircle } from 'lucide-react';
+import { Menu, X, LogOut, Building, ShieldCheck, LayoutDashboard, PlusCircle, GraduationCap } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { CiiLogo } from '../components/CiiLogo';
 import { Toast } from '../components/Toast';
@@ -107,6 +107,11 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0" />
                   CII Admin Portal
                 </span>
+              ) : currentUser.role === 'institution' ? (
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-200 uppercase tracking-wider">
+                  <GraduationCap className="h-4 w-4 text-amber-300 shrink-0" />
+                  {currentUser.institutionName || 'Academic Institution'}
+                </span>
               ) : (
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-stone-200 uppercase tracking-wider">
                   <Building className="h-4 w-4 text-stone-300 shrink-0" />
@@ -132,7 +137,7 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   <div className="px-4 py-3 bg-stone-50/70">
                     <p className="font-extrabold text-stone-900 truncate text-sm">{currentUser.name}</p>
                     <p className="text-xs text-[#063028] font-bold uppercase tracking-wider mt-0.5">
-                      {currentUser.role === 'admin' ? 'CII Admin' : 'Industry Partner'}
+                      {currentUser.role === 'admin' ? 'CII Admin' : currentUser.role === 'institution' ? 'Institution SPOC' : 'Industry Partner'}
                     </p>
                     <p className="text-xs text-stone-600 font-medium truncate mt-1">{currentUser.email}</p>
                   </div>
@@ -140,7 +145,13 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   {/* Actions */}
                   <div className="p-1.5 space-y-0.5">
                     <Link
-                      to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                      to={
+                        currentUser.role === 'admin' 
+                          ? '/admin/dashboard' 
+                          : currentUser.role === 'institution' 
+                          ? '/institution/dashboard' 
+                          : '/industry/dashboard'
+                      }
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2 px-3 py-2.5 font-bold text-stone-700 hover:bg-stone-50 hover:text-[#063028] rounded-lg transition-all text-xs sm:text-sm"
                     >
@@ -277,26 +288,39 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             </div>
 
             {/* Desktop CTA buttons on the right */}
-            <div className="hidden lg:flex items-center space-x-2 shrink-0 pl-1 xl:pl-3">
+            <div className="hidden lg:flex items-center space-x-1.5 xl:space-x-2 shrink-0 pl-1 xl:pl-3">
               {!currentUser ? (
                 <>
                   <Link
-                    to="/industry/login"
-                    className="px-3 xl:px-3.5 py-1.5 xl:py-2 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
+                    to="/institution/login"
+                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 border border-[#063028]/25 text-[#063028] bg-transparent hover:bg-[#edf4f0] text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs flex items-center gap-1.5"
                   >
-                    Register as Industry
+                    <GraduationCap className="w-3.5 h-3.5 text-[#c48825]" />
+                    Institution Portal
+                  </Link>
+                  <Link
+                    to="/industry/login"
+                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
+                  >
+                    Industry Login
                   </Link>
                   <Link
                     to="/admin/login"
-                    className="px-3 xl:px-3.5 py-1.5 xl:py-2 bg-[#063028] text-white text-xs xl:text-[13px] font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
+                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 bg-[#063028] text-white text-xs xl:text-[13px] font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
                   >
                     CII Admin
                   </Link>
                 </>
               ) : (
                 <Link
-                  to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all border ${
+                  to={
+                    currentUser.role === 'admin' 
+                      ? '/admin/dashboard' 
+                      : currentUser.role === 'institution' 
+                      ? '/institution/dashboard' 
+                      : '/industry/dashboard'
+                  }
+                  className={`px-4 py-2 rounded-xl text-xs xl:text-sm font-bold whitespace-nowrap transition-all border ${
                     location.pathname.includes('/dashboard') 
                       ? 'text-white bg-[#063028] border-[#063028] shadow-xs' 
                       : 'text-[#063028] bg-stone-50 hover:bg-stone-100 border-stone-200'
@@ -389,11 +413,19 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
                   <div className="border-t border-stone-200 my-2 pt-2 space-y-2 px-1">
                     <Link
+                      to="/institution/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-base font-semibold border border-[#063028]/30 text-[#063028] text-center hover:bg-[#edf4f0] transition-all cursor-pointer"
+                    >
+                      <GraduationCap className="w-4 h-4 text-[#c48825]" />
+                      Institution Portal
+                    </Link>
+                    <Link
                       to="/industry/login"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block w-full py-2.5 rounded-lg text-base font-semibold border border-stone-800 text-stone-900 text-center hover:bg-stone-50 transition-all cursor-pointer"
                     >
-                      Register as Industry
+                      Industry Login
                     </Link>
                     <Link
                       to="/admin/login"
@@ -407,7 +439,13 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               ) : (
                 <>
                   <Link
-                    to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                    to={
+                      currentUser.role === 'admin' 
+                        ? '/admin/dashboard' 
+                        : currentUser.role === 'institution' 
+                        ? '/institution/dashboard' 
+                        : '/industry/dashboard'
+                    }
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-bold text-[#063028] hover:bg-stone-50"
                   >

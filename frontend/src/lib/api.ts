@@ -1,4 +1,7 @@
-import { ProblemStatement, User, SubmissionStatus } from '../types';
+import { 
+  ProblemStatement, User, SubmissionStatus, UserRole, 
+  ProblemAssignment, SolutionSubmission, SolutionStatus 
+} from '../types';
 
 /**
  * Base URL comes from VITE_API_URL (e.g., http://localhost:3001)
@@ -42,6 +45,122 @@ function saveLocalChallenges(challenges: ProblemStatement[]) {
   localStorage.setItem('ciisic_submissions', JSON.stringify(challenges));
 }
 
+/** Problem Assignments (Institutions assigning challenges to student teams) */
+export function getLocalAssignments(): ProblemAssignment[] {
+  const saved = localStorage.getItem('ciisic_assignments');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // ignore
+    }
+  }
+  return [];
+}
+
+export function saveLocalAssignments(assignments: ProblemAssignment[]) {
+  localStorage.setItem('ciisic_assignments', JSON.stringify(assignments));
+}
+
+export function createAssignment(data: Omit<ProblemAssignment, 'id' | 'assignedDate' | 'status'>): ProblemAssignment {
+  const assignments = getLocalAssignments();
+  const newAssignment: ProblemAssignment = {
+    ...data,
+    id: 'ASG-' + Date.now().toString(36).toUpperCase(),
+    assignedDate: new Date().toISOString(),
+    status: 'ASSIGNED',
+  };
+  assignments.unshift(newAssignment);
+  saveLocalAssignments(assignments);
+  return newAssignment;
+}
+
+/** Solutions Submissions (Institutions/Teams submitting proposals to Industry challenges) */
+export function getLocalSolutions(): SolutionSubmission[] {
+  const saved = localStorage.getItem('ciisic_solutions');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // ignore
+    }
+  }
+  return [];
+}
+
+export function saveLocalSolutions(solutions: SolutionSubmission[]) {
+  localStorage.setItem('ciisic_solutions', JSON.stringify(solutions));
+}
+
+export async function submitSolution(data: Omit<SolutionSubmission, 'id' | 'submittedAt' | 'status'>): Promise<SolutionSubmission> {
+  const solutions = getLocalSolutions();
+  const newSolution: SolutionSubmission = {
+    ...data,
+    id: 'SOL-' + Date.now().toString(36).toUpperCase(),
+    submittedAt: new Date().toISOString(),
+    status: 'SUBMITTED',
+  };
+
+  solutions.unshift(newSolution);
+  saveLocalSolutions(solutions);
+
+  // If this solution is linked to an assignment, update assignment status
+  if (data.assignmentId) {
+    const assignments = getLocalAssignments();
+    const idx = assignments.findIndex(a => a.id === data.assignmentId);
+    if (idx !== -1) {
+      assignments[idx].status = 'SUBMITTED';
+      assignments[idx].solutionId = newSolution.id;
+      saveLocalAssignments(assignments);
+    }
+  }
+
+  // Attempt backend API dispatch if API_BASE is configured
+  if (API_BASE) {
+    try {
+      await fetchJSON(`${API_BASE}/api/challenges/${data.challengeId}/proposals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          summary: data.summary,
+          approachDoc: data.attachmentUrl || data.demoUrl || '',
+          isDraft: false,
+        }),
+      });
+    } catch (e) {
+      console.warn('Backend proposal dispatch fallback to local state:', e);
+    }
+  }
+
+  return newSolution;
+}
+
+export async function reviewSolution(
+  solutionId: string, 
+  status: SolutionStatus, 
+  feedback?: string, 
+  revisionNotes?: string
+): Promise<SolutionSubmission> {
+  const solutions = getLocalSolutions();
+  const index = solutions.findIndex(s => s.id === solutionId);
+  if (index === -1) {
+    throw new Error('Solution not found');
+  }
+
+  solutions[index] = {
+    ...solutions[index],
+    status,
+    reviewedAt: new Date().toISOString(),
+    industryFeedback: feedback !== undefined ? feedback : solutions[index].industryFeedback,
+    revisionNotes: revisionNotes !== undefined ? revisionNotes : solutions[index].revisionNotes,
+  };
+
+  saveLocalSolutions(solutions);
+  return solutions[index];
+}
+
 /** Helper to fetch JSON automatically injecting Authorization Bearer header */
 async function fetchJSON<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
@@ -65,104 +184,241 @@ async function fetchJSON<T>(input: RequestInfo, init?: RequestInit): Promise<T> 
   return data.data as T;
 }
 
+/** Backend user to frontend User mapper */
+export function mapBackendUserToFrontend(backendUser: any): User {
+  let role: UserRole = 'industry';
+  if (backendUser.role === 'CII_ADMIN' || backendUser.role === 'SUPER_ADMIN' || backendUser.role === 'admin') {
+    role = 'admin';
+  } else if (backendUser.role === 'INSTITUTION_SPOC' || backendUser.role === 'institution' || backendUser.role === 'STUDENT') {
+    role = 'institution';
+  } else if (backendUser.role === 'INDUSTRY_SPOC' || backendUser.role === 'industry') {
+    role = 'industry';
+  }
+
+  const instName =
+    backendUser.institutionProfile?.institution?.name ||
+    backendUser.institutionName ||
+    '';
+  const instCity =
+    backendUser.institutionProfile?.institution?.city ||
+    backendUser.institutionCity ||
+    '';
+  const compName =
+    backendUser.industryProfile?.companyName ||
+    backendUser.companyName ||
+    '';
+  const desig =
+    backendUser.industryProfile?.designation ||
+    backendUser.institutionProfile?.designation ||
+    backendUser.designation ||
+    '';
+  const dept =
+    backendUser.institutionProfile?.department ||
+    backendUser.department ||
+    '';
+  const phone =
+    backendUser.industryProfile?.phone ||
+    backendUser.institutionProfile?.phone ||
+    backendUser.phone ||
+    '';
+
+  return {
+    id: backendUser.id,
+    name: backendUser.name || 'User',
+    email: backendUser.email,
+    role,
+    companyName: compName,
+    designation: desig,
+    institutionName: instName,
+    institutionCity: instCity,
+    department: dept,
+    phone,
+  };
+}
+
 /** Auth */
-export async function login(email: string, password: string): Promise<User> {
-  if (API_BASE) {
-    try {
-      const response = await fetch(`${API_BASE}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+export async function login(email: string, password: string, _roleHint?: UserRole): Promise<User> {
+  const url = API_BASE ? `${API_BASE}/api/auth/login` : '/api/auth/login';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email: email.trim(), password }),
+  });
 
-      const data = await response.json();
-      if (data.success) {
-        setAuthToken(data.token);
-        return data.user;
-      }
-    } catch (e) {
-      console.warn('Backend login failed, using local auth:', e);
-    }
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || 'Invalid email or password');
   }
 
-  // Resilient Local Mock Login
-  const normalizedEmail = email.toLowerCase().trim();
-  const isAdmin = normalizedEmail.includes('admin') || normalizedEmail === 'admin@cii.in';
-
-  let user: User;
-  if (isAdmin) {
-    user = {
-      id: 'usr_adm_' + Date.now().toString(36),
-      name: 'CII Administrator',
-      email: normalizedEmail,
-      role: 'admin',
-      companyName: 'Confederation of Indian Industry',
-      designation: 'CII Regional Director',
-      industry: 'Industry-Academia Relations',
-    };
-  } else {
-    const domainName = normalizedEmail.split('@')[1]?.split('.')[0] || 'Enterprise';
-    const formattedCompany = domainName.charAt(0).toUpperCase() + domainName.slice(1) + ' Ltd';
-    user = {
-      id: 'usr_ind_' + Date.now().toString(36),
-      name: normalizedEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      email: normalizedEmail,
-      role: 'industry',
-      companyName: formattedCompany,
-      designation: 'Corporate R&D Lead',
-      industry: 'Industrial Innovation',
-    };
-  }
-
-  const mockToken = 'mock_jwt_' + btoa(JSON.stringify(user));
-  setAuthToken(mockToken);
+  setAuthToken(data.token);
+  const user = mapBackendUserToFrontend(data.user);
   localStorage.setItem('ciisic_current_user', JSON.stringify(user));
   return user;
 }
 
+export async function registerIndustry(data: {
+  companyName: string;
+  industry: string;
+  websiteUrl?: string;
+  isCIIMember?: boolean;
+  contactPerson: string;
+  email: string;
+  password: string;
+}): Promise<{ success: boolean; message: string; requiresApproval: boolean }> {
+  const url = API_BASE ? `${API_BASE}/api/auth/register` : '/api/auth/register';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: data.email.trim(),
+      password: data.password,
+      name: data.contactPerson,
+      role: 'INDUSTRY_SPOC',
+      companyName: data.companyName,
+      industry: data.industry,
+      websiteUrl: data.websiteUrl || '',
+      isCIIMember: data.isCIIMember ?? true,
+    }),
+  });
+
+  const resJson = await response.json();
+  if (!response.ok || !resJson.success) {
+    throw new Error(resJson.message || 'Industry registration failed');
+  }
+
+  return {
+    success: true,
+    requiresApproval: true,
+    message: 'Your enterprise registration has been submitted and is pending CII Administrator review. You will be able to log in once approved.',
+  };
+}
+
+export async function registerInstitution(data: {
+  institutionName: string;
+  institutionCity: string;
+  coordinatorName: string;
+  email: string;
+  department: string;
+  designation: string;
+  phone: string;
+  password?: string;
+}): Promise<{ success: boolean; message: string; requiresApproval: boolean }> {
+  const url = API_BASE ? `${API_BASE}/api/auth/register` : '/api/auth/register';
+  const password = data.password || 'Spoc@1234';
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: data.email.trim(),
+      password,
+      name: data.coordinatorName,
+      role: 'INSTITUTION_SPOC',
+      spocInstitutionId: data.institutionName,
+      department: data.department,
+      designation: data.designation,
+    }),
+  });
+
+  const resJson = await response.json();
+  if (!response.ok || !resJson.success) {
+    throw new Error(resJson.message || 'Institution registration failed');
+  }
+
+  return {
+    success: true,
+    requiresApproval: true,
+    message: 'Your academic institution registration has been submitted and is pending CII Administrator review. You will be able to log in once approved.',
+  };
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+  const url = API_BASE ? `${API_BASE}/api/auth/change-password` : '/api/auth/change-password';
+  return await fetchJSON<{ success: boolean; message: string }>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+}
+
+export interface RegistrationItem {
+  id: string;
+  name: string;
+  email: string;
+  role: 'INDUSTRY_SPOC' | 'INSTITUTION_SPOC';
+  approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isActive: boolean;
+  createdAt: string;
+  entityName: string;
+  industrySector?: string;
+  department?: string;
+  designation?: string;
+  websiteUrl?: string;
+  isCIIMember?: boolean;
+  institutionCity?: string;
+}
+
+export async function fetchAdminRegistrations(status?: string, role?: string): Promise<RegistrationItem[]> {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  if (role) params.set('role', role);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const url = API_BASE ? `${API_BASE}/api/admin/registrations${query}` : `/api/admin/registrations${query}`;
+  try {
+    return await fetchJSON<RegistrationItem[]>(url);
+  } catch (e) {
+    console.warn('Failed to fetch admin registrations:', e);
+    return [];
+  }
+}
+
+export async function reviewRegistration(id: string, action: 'APPROVE' | 'REJECT', remarks?: string): Promise<any> {
+  const url = API_BASE ? `${API_BASE}/api/admin/registrations/${id}/review` : `/api/admin/registrations/${id}/review`;
+  return await fetchJSON<any>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, remarks }),
+  });
+}
+
 export async function logout() {
-  if (API_BASE) {
+  const url = API_BASE ? `${API_BASE}/api/auth/logout` : '/api/auth/logout';
+  try {
     const headers = new Headers();
     if (authToken) {
       headers.set("Authorization", `Bearer ${authToken}`);
     }
-
-    try {
-      await fetch(`${API_BASE}/api/auth/logout`, {
-        method: 'POST',
-        headers,
-      });
-    } catch (e) {
-      console.error("Logout request error:", e);
-    }
+    await fetch(url, {
+      method: 'POST',
+      headers,
+    });
+  } catch (e) {
+    console.error("Logout request error:", e);
+  } finally {
+    setAuthToken(null);
+    localStorage.removeItem('ciisic_current_user');
   }
-
-  setAuthToken(null);
-  localStorage.removeItem('ciisic_current_user');
 }
 
 export async function getSession(): Promise<User | null> {
-  if (API_BASE && authToken && !authToken.startsWith('mock_jwt_')) {
-    try {
-      return await fetchJSON<User>(`${API_BASE}/api/auth/me`);
-    } catch {
-      setAuthToken(null);
-      return null;
-    }
+  if (!authToken) {
+    return null;
   }
 
-  // Local token inspection
-  const savedUser = localStorage.getItem('ciisic_current_user');
-  if (savedUser) {
-    try {
-      return JSON.parse(savedUser);
-    } catch {
-      return null;
-    }
+  const url = API_BASE ? `${API_BASE}/api/auth/me` : '/api/auth/me';
+  try {
+    const backendData = await fetchJSON<any>(url);
+    const user = mapBackendUserToFrontend(backendData);
+    localStorage.setItem('ciisic_current_user', JSON.stringify(user));
+    return user;
+  } catch {
+    setAuthToken(null);
+    localStorage.removeItem('ciisic_current_user');
+    return null;
   }
-  return null;
 }
 
 /** Challenges */

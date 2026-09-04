@@ -55,6 +55,9 @@ export async function POST(req: NextRequest) {
       where: { email },
       include: {
         industryProfile: true,
+        institutionProfile: {
+          include: { institution: true },
+        },
       },
     });
 
@@ -65,10 +68,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!user.isActive) {
+    if (user.approvalStatus === "PENDING" || !user.isActive) {
+      const isPending = user.approvalStatus === "PENDING";
       return NextResponse.json(
-        { success: false, message: "Your account has been deactivated" },
-        { status: 401, headers }
+        {
+          success: false,
+          message: isPending
+            ? "Your registration is currently pending approval by the CII Administrator. You will be able to log in once your account is approved."
+            : "Your account has been deactivated or rejected by the CII Administrator.",
+        },
+        { status: 403, headers }
       );
     }
 
@@ -131,6 +140,7 @@ export async function POST(req: NextRequest) {
           role: user.role,
           avatarUrl: user.avatarUrl || null,
           industryProfile: user.industryProfile,
+          institutionProfile: user.institutionProfile,
         },
       },
       { status: 200, headers }
