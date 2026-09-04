@@ -5,7 +5,6 @@ import type { NextRequest } from "next/server";
 const PROTECTED_ROUTES: Record<string, string[]> = {
   "/api/admin": ["SUPER_ADMIN", "CII_ADMIN"],
   "/api/users": ["SUPER_ADMIN", "CII_ADMIN"],
-  "/api/institutions": ["SUPER_ADMIN", "CII_ADMIN"],
 };
 
 const AUTH_REQUIRED_PREFIXES = [
@@ -17,7 +16,6 @@ const AUTH_REQUIRED_PREFIXES = [
   "/api/notifications",
   "/api/admin",
   "/api/users",
-  "/api/institutions",
   "/api/upload",
 ];
 
