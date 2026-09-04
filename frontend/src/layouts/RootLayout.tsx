@@ -35,6 +35,10 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
   // Active section scroll highlighter
   useEffect(() => {
+    if (location.pathname === '/services') {
+      setActiveSection('services');
+      return;
+    }
     if (location.pathname === '/institutions') {
       setActiveSection('institutions');
       return;
@@ -233,6 +237,16 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     About CIISIC
                   </button>
+                  <Link
+                    to="/services"
+                    className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      activeSection === 'services' || location.pathname === '/services'
+                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full' 
+                        : 'text-stone-700 hover:text-[#063028]'
+                    }`}
+                  >
+                    Services
+                  </Link>
                   <button
                     onClick={() => handleNavClick('partner-institutions')}
                     className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
@@ -361,6 +375,15 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   >
                     About CIISIC
                   </button>
+                  <Link
+                    to="/services"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
+                      location.pathname === '/services' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
+                    }`}
+                  >
+                    Services
+                  </Link>
                   <button
                     onClick={() => handleNavClick('partner-institutions')}
                     className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${

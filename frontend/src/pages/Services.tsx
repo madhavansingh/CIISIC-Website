@@ -62,51 +62,14 @@ export const Services: React.FC = () => {
         {/* 4 Cards Grid - 4 columns on desktop, equal height */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           
-          {/* Card 1: Strategy & Visibility */}
+          {/* Card 1: Build & Deploy */}
           <div
-            id="service-strategy-visibility"
+            id="build-deploy"
             className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028]/30 transition-all duration-200 scroll-mt-24"
           >
             <div>
               <div className="text-xs font-bold tracking-wider uppercase text-[#c48825] mb-2 font-mono">
-                01 · STRATEGY
-              </div>
-              <h3 className="text-xl font-bold text-[#063028] font-serif mb-3">
-                Strategy &amp; Visibility
-              </h3>
-              <p className="text-stone-600 text-sm leading-relaxed mb-6">
-                Clarify where AI can create value, choose the right tools, and make sure your brand and expertise show up in AI-driven search and recommendations.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-stone-100">
-              <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2.5">
-                Key Services
-              </span>
-              <ul className="space-y-2">
-                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
-                  <span>Generative Engine Optimization (GEO)</span>
-                </li>
-                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
-                  <span>AI Vendor Evaluation &amp; Selection</span>
-                </li>
-                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
-                  <span>AI Market &amp; Competitive Intelligence</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Card 2: Build & Deploy */}
-          <div
-            id="service-build-deploy"
-            className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028]/30 transition-all duration-200 scroll-mt-24"
-          >
-            <div>
-              <div className="text-xs font-bold tracking-wider uppercase text-[#c48825] mb-2 font-mono">
-                02 · ENGINEERING
+                01 · ENGINEERING
               </div>
               <h3 className="text-xl font-bold text-[#063028] font-serif mb-3">
                 Build &amp; Deploy
@@ -136,9 +99,46 @@ export const Services: React.FC = () => {
             </div>
           </div>
 
+          {/* Card 2: Strategy & Visibility */}
+          <div
+            id="strategy-visibility"
+            className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028]/30 transition-all duration-200 scroll-mt-24"
+          >
+            <div>
+              <div className="text-xs font-bold tracking-wider uppercase text-[#c48825] mb-2 font-mono">
+                02 · STRATEGY
+              </div>
+              <h3 className="text-xl font-bold text-[#063028] font-serif mb-3">
+                Strategy &amp; Visibility
+              </h3>
+              <p className="text-stone-600 text-sm leading-relaxed mb-6">
+                Clarify where AI can create value, choose the right tools, and make sure your brand and expertise show up in AI-driven search and recommendations.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-stone-100">
+              <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2.5">
+                Key Services
+              </span>
+              <ul className="space-y-2">
+                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
+                  <span>Generative Engine Optimization (GEO)</span>
+                </li>
+                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
+                  <span>AI Vendor Evaluation &amp; Selection</span>
+                </li>
+                <li className="text-xs sm:text-sm text-stone-700 font-medium flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-1.5 shrink-0" />
+                  <span>AI Market &amp; Competitive Intelligence</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
           {/* Card 3: Adoption & Capability */}
           <div
-            id="service-adoption-capability"
+            id="adoption-capability"
             className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028]/30 transition-all duration-200 scroll-mt-24"
           >
             <div>
@@ -175,7 +175,7 @@ export const Services: React.FC = () => {
 
           {/* Card 4: Governance & Insight */}
           <div
-            id="service-governance-insight"
+            id="governance-insight"
             className="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028]/30 transition-all duration-200 scroll-mt-24"
           >
             <div>
@@ -231,14 +231,14 @@ export const Services: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              const el = document.getElementById('service-build-deploy');
+              const el = document.getElementById('build-deploy');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="group text-left bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028] hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#063028] focus:ring-offset-2"
           >
             <div>
-              <div className="text-xs font-bold tracking-wider uppercase text-stone-400 mb-2 font-mono">
-                OPTION 01
+              <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase text-[#063028] bg-[#edf4f0] mb-2.5 font-mono">
+                BUILD &amp; DEPLOY
               </div>
               <h3 className="text-lg font-bold text-[#063028] font-serif mb-2.5 group-hover:text-[#063028]">
                 I have an AI idea
@@ -257,14 +257,14 @@ export const Services: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              const el = document.getElementById('service-strategy-visibility');
+              const el = document.getElementById('strategy-visibility');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="group text-left bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028] hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#063028] focus:ring-offset-2"
           >
             <div>
-              <div className="text-xs font-bold tracking-wider uppercase text-stone-400 mb-2 font-mono">
-                OPTION 02
+              <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase text-[#063028] bg-[#edf4f0] mb-2.5 font-mono">
+                STRATEGY &amp; VISIBILITY
               </div>
               <h3 className="text-lg font-bold text-[#063028] font-serif mb-2.5 group-hover:text-[#063028]">
                 I need to choose the right AI tool
@@ -283,14 +283,14 @@ export const Services: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              const el = document.getElementById('service-adoption-capability');
+              const el = document.getElementById('adoption-capability');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="group text-left bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028] hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#063028] focus:ring-offset-2"
           >
             <div>
-              <div className="text-xs font-bold tracking-wider uppercase text-stone-400 mb-2 font-mono">
-                OPTION 03
+              <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase text-[#063028] bg-[#edf4f0] mb-2.5 font-mono">
+                ADOPTION &amp; CAPABILITY
               </div>
               <h3 className="text-lg font-bold text-[#063028] font-serif mb-2.5 group-hover:text-[#063028]">
                 I need my team or students to become AI-ready
@@ -309,14 +309,14 @@ export const Services: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              const el = document.getElementById('service-governance-insight');
+              const el = document.getElementById('governance-insight');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="group text-left bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#063028] hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#063028] focus:ring-offset-2"
           >
             <div>
-              <div className="text-xs font-bold tracking-wider uppercase text-stone-400 mb-2 font-mono">
-                OPTION 04
+              <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase text-[#063028] bg-[#edf4f0] mb-2.5 font-mono">
+                GOVERNANCE &amp; INSIGHT
               </div>
               <h3 className="text-lg font-bold text-[#063028] font-serif mb-2.5 group-hover:text-[#063028]">
                 I need to use AI responsibly
