@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Building2, PlusCircle, CheckCircle, Clock, AlertTriangle, FileText, 
   Globe, ChevronRight, FileCheck, X,
-  Calendar, DollarSign, UploadCloud, ArrowLeft, RefreshCw, Eye, Download,
+  Calendar, IndianRupee, UploadCloud, ArrowLeft, RefreshCw, Eye, Download,
   GraduationCap, ExternalLink, Award, Sparkles, MessageSquare, Send, CheckSquare, Layers, User, Lock
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
@@ -1215,7 +1215,7 @@ export const IndustryDashboard: React.FC = () => {
                         </label>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
-                            <DollarSign className="h-5 w-5" />
+                            <IndianRupee className="h-5 w-5" />
                           </span>
                           <input
                             type="text"

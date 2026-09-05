@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, Building2, Cpu, ArrowRight, Sparkles, 
-  Clock, DollarSign, GraduationCap,
+  Clock, IndianRupee, GraduationCap,
   Layers, BookOpen, ChevronRight, X
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
@@ -437,7 +437,7 @@ export const ProblemStatements: React.FC = () => {
                       <div>
                         <span className="text-stone-500 font-medium block">Grant / Funding:</span>
                         <span className="font-bold text-[#063028] flex items-center gap-1 mt-0.5 truncate" title={funding}>
-                          <DollarSign className="h-3.5 w-3.5 text-[#c48825] shrink-0" /> {funding}
+                          <IndianRupee className="h-3.5 w-3.5 text-[#c48825] shrink-0" /> {funding}
                         </span>
                       </div>
                     </div>
