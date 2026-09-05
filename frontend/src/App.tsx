@@ -12,6 +12,7 @@ import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SubmissionDetails } from './pages/SubmissionDetails';
 import { ProblemStatements } from './pages/ProblemStatements';
+import { Services } from './pages/Services';
 import { InstitutionLogin } from './pages/InstitutionLogin';
 import { InstitutionRegister } from './pages/InstitutionRegister';
 import { InstitutionDashboard } from './pages/InstitutionDashboard';
@@ -103,6 +104,9 @@ export default function App() {
             
             {/* Dedicated Partner Institutions Directory */}
             <Route path="/institutions" element={<Institutions />} />
+
+            {/* Services Page */}
+            <Route path="/services" element={<Services />} />
 
             {/* Public Problem Statements Repository */}
             <Route path="/problem-statements" element={<ProblemStatements />} />
