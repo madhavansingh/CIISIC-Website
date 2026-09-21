@@ -24,6 +24,21 @@
 }
 
 /* Global Typography & Readability Foundation */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 html {
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
@@ -35,6 +50,7 @@ body {
   font-family: var(--font-sans);
   color: #292524;
   line-height: 1.6;
+  background-color: #faf7f0;
 }
 
 /* Custom styles for animations & layout styling */

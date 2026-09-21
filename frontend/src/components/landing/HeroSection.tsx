@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, GraduationCap, Users, Brain, ShieldCheck, Lock, Sparkles } from 'lucide-react';
+import { Building2, GraduationCap, Users, Brain, ShieldCheck, Lock } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
   return (
@@ -29,8 +29,8 @@ export const HeroSection: React.FC = () => {
         </svg>
       </div>
 
-      {/* Main Hero Container */}
-      <section id="hero" className="pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24 relative z-10 scroll-mt-24">
+      {/* Main Hero Mission Container */}
+      <section id="hero-mission" className="pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24 relative z-10 scroll-mt-24">
         <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-18 items-center">
@@ -70,9 +70,8 @@ export const HeroSection: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   <Link
                     to="/problem-statements"
-                    className="inline-flex items-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-[#063028] hover:bg-[#04201a] transition-all duration-200 shadow-sm active:scale-98 whitespace-nowrap"
+                    className="inline-flex items-center justify-center px-5 sm:px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-[#063028] hover:bg-[#04201a] transition-all duration-200 shadow-sm active:scale-98 whitespace-nowrap"
                   >
-                    <Sparkles className="w-4 h-4 text-[#c48825]" />
                     <span>Explore Problem Statements</span>
                   </Link>
 
