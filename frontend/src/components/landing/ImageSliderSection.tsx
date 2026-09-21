@@ -17,66 +17,66 @@ import 'swiper/css/navigation';
 const images = [
   {
     id: 1,
-    src: encodeURI('/images/Photos/Industry Academia Excellence Cell Leadership Meet July 2026.JPG'),
-    alt: 'Industry Academia Excellence Cell Leadership Meet July 2026',
-    title: 'Industry Academia Excellence Cell Leadership Meet',
-    date: 'July 2026',
-    objectPosition: 'center 32%',
+    src: '/images/Photos/Launch-of-7-Excellence-Cells-July-2026.jpeg',
+    alt: 'Official Launch of 7 Industry Excellence Cells',
+    title: 'Official Launch of 7 Industry Excellence Cells',
+    date: 'JULY 2026',
+    objectPosition: 'center 30%',
   },
   {
     id: 2,
-    src: encodeURI('/images/Photos/Industry Academia Survey Repot Launch Feb 2026.jpeg'),
-    alt: 'Industry Academia Survey Report Launch Feb 2026',
-    title: 'Industry Academia Survey Report Launch',
-    date: 'February 2026',
-    objectPosition: 'center 25%',
-  },
-  {
-    id: 3,
-    src: encodeURI('/images/Photos/Interaction with PS Higher Education, Govt of MP July 2026.JPG'),
-    alt: 'Interaction with PS Higher Education, Govt of MP July 2026',
-    title: 'Interaction with PS Higher Education, Govt of MP',
-    date: 'July 2026',
+    src: '/images/Photos/Industry-Academia-Excellence-Cell-Leadership-Meet-July-2026.jpeg',
+    alt: 'Industry Academia Excellence Cell Leadership Meet',
+    title: 'Industry Academia Excellence Cell Leadership Meet',
+    date: 'JULY 2026',
     objectPosition: 'center 35%',
   },
   {
-    id: 4,
-    src: encodeURI('/images/Photos/July 2026 (2).JPG'),
-    alt: 'Industry-Academia Strategic Dialogue July 2026',
-    title: 'Industry-Academia Strategic Dialogue',
-    date: 'July 2026',
+    id: 3,
+    src: '/images/Photos/Interaction-with-PS-Higher-Education_-Govt-of-MP-July-2026.jpeg',
+    alt: 'Interaction with PS Higher Education, Govt of MP',
+    title: 'Interaction with PS Higher Education, Govt of MP',
+    date: 'JULY 2026',
     objectPosition: 'center 30%',
+  },
+  {
+    id: 4,
+    src: '/images/Photos/July-2026-_2_.jpeg',
+    alt: 'Industry-Academia Strategic Dialogue',
+    title: 'Industry-Academia Strategic Dialogue',
+    date: 'JULY 2026',
+    objectPosition: 'center 35%',
   },
   {
     id: 5,
-    src: encodeURI('/images/Photos/July 2026.JPG'),
-    alt: 'Felicitation and Memento Presentation July 2026',
+    src: '/images/Photos/July-2026.jpeg',
+    alt: 'Leadership Felicitation & Memento Presentation',
     title: 'Leadership Felicitation & Memento Presentation',
-    date: 'July 2026',
-    objectPosition: 'center 30%',
+    date: 'JULY 2026',
+    objectPosition: 'center 35%',
   },
   {
     id: 6,
-    src: encodeURI('/images/Photos/Launch of 7 Excellence Cells - July 2026.JPG'),
-    alt: 'Launch of 7 Excellence Cells July 2026',
-    title: 'Official Launch of 7 Industry Excellence Cells',
-    date: 'July 2026',
-    objectPosition: 'center 20%',
-  },
-  {
-    id: 7,
-    src: encodeURI('/images/Photos/Round Table on Industry Academia Collaboration - May 2025 (2).jpeg'),
-    alt: 'Round Table on Industry Academia Collaboration May 2025',
-    title: 'Round Table on Industry-Academia Collaboration',
-    date: 'May 2025',
+    src: encodeURI('/images/Photos/Round Table on Industry Academia Collaboration Ma 2026.jpeg'),
+    alt: 'Round Table on Collaborative Innovation',
+    title: 'Round Table on Collaborative Innovation',
+    date: 'MARCH 2026',
     objectPosition: 'center center',
   },
   {
+    id: 7,
+    src: encodeURI('/images/Photos/Industry Academia Survey Repot Launch Feb 2026.jpeg'),
+    alt: 'Industry Academia Survey Report Launch',
+    title: 'Industry Academia Survey Report Launch',
+    date: 'FEBRUARY 2026',
+    objectPosition: 'center 25%',
+  },
+  {
     id: 8,
-    src: encodeURI('/images/Photos/Round Table on Industry Academia Collaboration Ma 2026.jpeg'),
-    alt: 'Round Table on Industry Academia Collaboration March 2026',
-    title: 'Round Table on Collaborative Innovation',
-    date: 'March 2026',
+    src: encodeURI('/images/Photos/Round Table on Industry Academia Collaboration - May 2025 (2).jpeg'),
+    alt: 'Round Table on Industry-Academia Collaboration',
+    title: 'Round Table on Industry-Academia Collaboration',
+    date: 'MAY 2025',
     objectPosition: 'center center',
   },
 ];
@@ -90,8 +90,8 @@ export const ImageSliderSection: React.FC = () => {
       {/* Section label */}
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12 mb-8 sm:mb-12">
         <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf4f0] text-[#063028] text-xs font-semibold tracking-wide border border-[#063028]/10">
-              ✦ Ecosystem in Action
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#edf4f0] text-[#063028] text-xs font-semibold tracking-wide border border-[#063028]/10">
+              Ecosystem in Action
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#063028] tracking-tight leading-tight font-serif">
               Innovation &amp; Collaboration Gallery
