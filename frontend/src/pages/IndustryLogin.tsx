@@ -166,6 +166,15 @@ export const IndustryLogin: React.FC = () => {
                 {isLoading ? 'Verifying Corporate Session...' : 'Sign In to Partner Portal'}
                 {!isLoading && <ArrowRight className="h-5 w-5" />}
               </button>
+
+              <div className="pt-2 text-center">
+                <p className="text-xs text-stone-600">
+                  New enterprise partner?{' '}
+                  <Link to="/industry/register" className="font-bold text-[#c48825] hover:underline inline-flex items-center gap-1">
+                    Register Industry Account <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </p>
+              </div>
             </form>
           </div>
         </div>

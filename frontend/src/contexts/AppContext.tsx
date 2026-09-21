@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ProblemStatement, User, SubmissionStatus } from '../types';
-import { login as apiLogin, logout as apiLogout, getSession, fetchChallenges, createChallenge, updateChallenge, reviewChallenge } from '../lib/api';
+import { 
+  ProblemStatement, User, SubmissionStatus, UserRole, 
+  ProblemAssignment, SolutionSubmission, SolutionStatus 
+} from '../types';
+import { 
+  login as apiLogin, logout as apiLogout, getSession, 
+  fetchChallenges, createChallenge, updateChallenge, reviewChallenge,
+  getLocalAssignments, createAssignment, getLocalSolutions,
+  submitSolution as apiSubmitSolution, reviewSolution as apiReviewSolution
+} from '../lib/api';
 
 export interface ToastType {
   message: string;
@@ -10,43 +18,55 @@ export interface ToastType {
 interface AppContextType {
   currentUser: User | null;
   submissions: ProblemStatement[];
+  assignments: ProblemAssignment[];
+  solutions: SolutionSubmission[];
   toast: ToastType | null;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   hideToast: () => void;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string, roleHint?: UserRole) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   addSubmission: (submission: Omit<ProblemStatement, 'id' | 'status' | 'submittedDate'>) => Promise<string>;
   updateSubmissionStatus: (id: string, status: SubmissionStatus, remarks?: string) => Promise<void>;
   updateSubmission: (submission: ProblemStatement) => Promise<void>;
+  assignChallenge: (assignmentData: Omit<ProblemAssignment, 'id' | 'assignedDate' | 'status'>) => Promise<ProblemAssignment>;
+  submitSolution: (solutionData: Omit<SolutionSubmission, 'id' | 'submittedAt' | 'status'>) => Promise<SolutionSubmission>;
+  reviewSolution: (solutionId: string, status: SolutionStatus, feedback?: string, revisionNotes?: string) => Promise<SolutionSubmission>;
   resetData: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const mapUserRole = (user: any): User => {
-  const roleMap: Record<string, 'industry' | 'admin'> = {
+  const roleMap: Record<string, UserRole> = {
     INDUSTRY_SPOC: 'industry',
     SUPER_ADMIN: 'admin',
     CII_ADMIN: 'admin',
-    INSTITUTION_SPOC: 'admin',
+    INSTITUTION_SPOC: 'institution',
+    STUDENT: 'institution',
+    industry: 'industry',
+    admin: 'admin',
+    institution: 'institution',
   };
   return {
     id: user.id,
     name: user.name,
     email: user.email,
-    role: roleMap[user.role] || 'industry',
+    role: roleMap[user.role] || (user.role as UserRole) || 'industry',
     companyName: user.industryProfile?.companyName ?? user.companyName,
-    designation: user.industryProfile?.designation ?? user.designation,
+    designation: user.industryProfile?.designation ?? user.institutionProfile?.designation ?? user.designation,
     industry: user.industryProfile?.industry ?? user.industry,
+    institutionName: user.institutionProfile?.institution?.name ?? user.institutionName,
+    institutionCity: user.institutionProfile?.institution?.city ?? user.institutionCity,
+    department: user.institutionProfile?.department ?? user.department,
+    phone: user.phone,
   };
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Load initial user or check local storage
-  // Duplicate initial user load removed; state will be set after session fetch
-
   // Load submissions from backend or fallback to localStorage
   const [submissions, setSubmissions] = useState<ProblemStatement[]>([]);
+  const [assignments, setAssignments] = useState<ProblemAssignment[]>(getLocalAssignments);
+  const [solutions, setSolutions] = useState<SolutionSubmission[]>(getLocalSolutions);
 
   // Load current user session
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -112,11 +132,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [currentUser]);
 
-
-
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, roleHint?: UserRole) => {
     try {
-      const user = await apiLogin(email, password);
+      const user = await apiLogin(email, password, roleHint);
       setCurrentUser(mapUserRole(user));
       return { success: true };
     } catch (e: any) {
@@ -151,11 +169,45 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const assignChallenge = async (assignmentData: Omit<ProblemAssignment, 'id' | 'assignedDate' | 'status'>): Promise<ProblemAssignment> => {
+    const created = createAssignment(assignmentData);
+    setAssignments((prev) => [created, ...prev]);
+    showToast(`Assigned ${assignmentData.challengeTitle} to ${assignmentData.teamName}`, 'success');
+    return created;
+  };
+
+  const submitSolution = async (solutionData: Omit<SolutionSubmission, 'id' | 'submittedAt' | 'status'>): Promise<SolutionSubmission> => {
+    const created = await apiSubmitSolution(solutionData);
+    setSolutions((prev) => [created, ...prev]);
+    // Refresh assignments in case one was linked
+    setAssignments(getLocalAssignments());
+    showToast('Solution submitted successfully to Industry and CII review!', 'success');
+    return created;
+  };
+
+  const reviewSolution = async (
+    solutionId: string, 
+    status: SolutionStatus, 
+    feedback?: string, 
+    revisionNotes?: string
+  ): Promise<SolutionSubmission> => {
+    const updated = await apiReviewSolution(solutionId, status, feedback, revisionNotes);
+    setSolutions((prev) =>
+      prev.map((sol) => (sol.id === solutionId ? updated : sol))
+    );
+    showToast(`Solution marked as ${status.replace('_', ' ')}`, 'success');
+    return updated;
+  };
+
   const resetData = () => {
     setCurrentUser(null);
     setSubmissions([]);
+    setAssignments([]);
+    setSolutions([]);
     localStorage.removeItem('ciisic_current_user');
     localStorage.removeItem('ciisic_submissions');
+    localStorage.removeItem('ciisic_assignments');
+    localStorage.removeItem('ciisic_solutions');
   };
 
   return (
@@ -163,6 +215,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         currentUser,
         submissions,
+        assignments,
+        solutions,
         toast,
         showToast,
         hideToast,
@@ -171,6 +225,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addSubmission,
         updateSubmissionStatus,
         updateSubmission,
+        assignChallenge,
+        submitSolution,
+        reviewSolution,
         resetData
       }}
     >

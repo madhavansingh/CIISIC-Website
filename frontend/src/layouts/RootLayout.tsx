@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, Building, ShieldCheck, LayoutDashboard, PlusCircle } from 'lucide-react';
+import { Menu, X, LogOut, Building, ShieldCheck, LayoutDashboard, PlusCircle, GraduationCap } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { CiiLogo } from '../components/CiiLogo';
 import { Toast } from '../components/Toast';
@@ -33,31 +33,89 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
     return () => document.removeEventListener('click', handleOutsideClick);
   }, [dropdownOpen]);
 
+  const navItems = [
+    { id: 'hero', label: 'Home' },
+    { id: 'about-ciisic', label: 'About CIISIC' },
+    { id: 'services', label: 'Services' },
+    { id: 'partner-institutions', label: 'Institutions' },
+    { id: 'problem-statements', label: 'Problem Statements' },
+    { id: 'our-ecosystem', label: 'Our Ecosystem' },
+    { id: 'how-it-works', label: 'How It Works' },
+    { id: 'get-involved', label: 'Get Involved' },
+  ];
+
+  const isNavActive = (id: string) => {
+    if (id === 'services' && location.pathname === '/services') return true;
+    if (id === 'partner-institutions' && location.pathname === '/institutions') return true;
+    if (
+      id === 'problem-statements' &&
+      (location.pathname === '/problem-statements' || location.pathname.startsWith('/details'))
+    ) {
+      return true;
+    }
+    if (location.pathname === '/') {
+      return activeSection === id;
+    }
+    return false;
+  };
+
   // Active section scroll highlighter
   useEffect(() => {
-    if (location.pathname !== '/') {
-      setActiveSection('institutions'); // Highlight institutions as the active navigation item when viewing that page
+    if (location.pathname === '/services') {
+      setActiveSection('services');
+      return;
+    }
+    if (location.pathname === '/institutions') {
+      setActiveSection('partner-institutions');
+      return;
+    }
+    if (location.pathname === '/problem-statements' || location.pathname.startsWith('/details')) {
+      setActiveSection('problem-statements');
       return;
     }
 
     const handleScroll = () => {
-      const sections = ['hero', 'about-ciisic', 'partner-institutions', 'our-ecosystem', 'how-it-works', 'get-involved'];
-      const scrollPosition = window.scrollY + 160; // Offset for sticky navbar
+      const sections = [
+        'hero',
+        'about-ciisic',
+        'services',
+        'partner-institutions',
+        'problem-statements',
+        'our-ecosystem',
+        'how-it-works',
+        'get-involved',
+      ];
+
+      // If scrolled to very bottom of document (within 60px), activate last section
+      const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
+      if (isBottom) {
+        setActiveSection('get-involved');
+        return;
+      }
+
+      // If near top of page, activate hero
+      if (window.scrollY < 80) {
+        setActiveSection('hero');
+        return;
+      }
+
+      const navOffset = 110;
+      let currentSection = 'hero';
 
       for (const section of sections) {
         const el = document.getElementById(section);
         if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
+          const top = el.getBoundingClientRect().top;
+          if (top <= navOffset) {
+            currentSection = section;
           }
         }
       }
+
+      setActiveSection(currentSection);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Run immediately to sync on mount
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
@@ -76,17 +134,38 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+    if (sectionId === 'services' && location.pathname === '/services') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (sectionId === 'problem-statements' && (location.pathname === '/problem-statements' || location.pathname.startsWith('/details'))) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const scrollToSection = (id: string) => {
+      const el = document.getElementById(id);
+      if (el) {
+        const navElement = document.getElementById('platform-navbar');
+        const navHeight = navElement ? navElement.offsetHeight : 72;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navHeight - 16;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
+      }
+    };
 
     if (location.pathname !== '/') {
       navigate('/');
       // Wait a moment for the page to transition, then scroll
       setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
+        scrollToSection(sectionId);
+      }, 150);
     } else {
-      const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      scrollToSection(sectionId);
     }
   };
 
@@ -102,6 +181,11 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-300">
                   <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0" />
                   CII Admin Portal
+                </span>
+              ) : currentUser.role === 'institution' ? (
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-200 uppercase tracking-wider">
+                  <GraduationCap className="h-4 w-4 text-amber-300 shrink-0" />
+                  {currentUser.institutionName || 'Academic Institution'}
                 </span>
               ) : (
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-stone-200 uppercase tracking-wider">
@@ -128,7 +212,7 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   <div className="px-4 py-3 bg-stone-50/70">
                     <p className="font-extrabold text-stone-900 truncate text-sm">{currentUser.name}</p>
                     <p className="text-xs text-[#063028] font-bold uppercase tracking-wider mt-0.5">
-                      {currentUser.role === 'admin' ? 'CII Admin' : 'Industry Partner'}
+                      {currentUser.role === 'admin' ? 'CII Admin' : currentUser.role === 'institution' ? 'Institution SPOC' : 'Industry Partner'}
                     </p>
                     <p className="text-xs text-stone-600 font-medium truncate mt-1">{currentUser.email}</p>
                   </div>
@@ -136,7 +220,13 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   {/* Actions */}
                   <div className="p-1.5 space-y-0.5">
                     <Link
-                      to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                      to={
+                        currentUser.role === 'admin' 
+                          ? '/admin/dashboard' 
+                          : currentUser.role === 'institution' 
+                          ? '/institution/dashboard' 
+                          : '/industry/dashboard'
+                      }
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2 px-3 py-2.5 font-bold text-stone-700 hover:bg-stone-50 hover:text-[#063028] rounded-lg transition-all text-xs sm:text-sm"
                     >
@@ -177,10 +267,10 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       {/* Sticky Premium Navbar - Full Width & Adaptive */}
       <nav id="platform-navbar" className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#e8e4dc] shadow-xs w-full">
-        <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-          <div className="flex justify-between items-center h-20 w-full">
+        <div className="w-full px-4 sm:px-6 lg:px-6 xl:px-8 2xl:px-10">
+          <div className="flex justify-between items-center h-18 w-full">
             {/* Logo and Brand */}
-            <div className="flex items-center shrink-0 pr-2 lg:pr-3 xl:pr-6">
+            <div className="flex items-center shrink-0 pr-2 lg:pr-3 xl:pr-4">
               <Link to="/" className="shrink-0 flex items-center gap-2.5 sm:gap-3">
                 <CiiLogo size="md" />
                 <div className="flex flex-col justify-center leading-tight">
@@ -195,94 +285,57 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center justify-center flex-1 mx-1 lg:mx-2 xl:mx-4 space-x-0.5 xl:space-x-1.5 2xl:space-x-3">
+            <div className="hidden lg:flex items-center justify-center flex-1 mx-1 lg:mx-2 xl:mx-3 space-x-0.5 xl:space-x-1">
               {!currentUser && (
                 <>
-                  <button
-                    onClick={() => handleNavClick('hero')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'hero' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    Home
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('about-ciisic')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'about-ciisic' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    About CIISIC
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('partner-institutions')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'partner-institutions' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    Institutions
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('our-ecosystem')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'our-ecosystem' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    Our Ecosystem
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('how-it-works')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'how-it-works' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    How It Works
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('get-involved')}
-                    className={`relative py-2 px-2 xl:px-2.5 2xl:px-3 text-xs xl:text-sm 2xl:text-base font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                      activeSection === 'get-involved' 
-                        ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 2xl:after:left-3 2xl:after:right-3 after:h-[2.5px] after:bg-[#c48825] after:rounded-full' 
-                        : 'text-stone-700 hover:text-[#063028]'
-                    }`}
-                  >
-                    Get Involved
-                  </button>
+                  {navItems.map((item) => {
+                    const active = isNavActive(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNavClick(item.id)}
+                        className={`relative py-1.5 px-2 xl:px-2.5 text-xs xl:text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                          active
+                            ? 'text-[#063028] font-bold after:absolute after:bottom-0 after:left-2 after:right-2 xl:after:left-2.5 xl:after:right-2.5 after:h-[2px] after:bg-[#c48825] after:rounded-full'
+                            : 'text-stone-700 hover:text-[#063028]'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
                 </>
               )}
             </div>
 
             {/* Desktop CTA buttons on the right */}
-            <div className="hidden lg:flex items-center space-x-2 xl:space-x-3 shrink-0 pl-1 xl:pl-4">
+            <div className="hidden lg:flex items-center space-x-1.5 xl:space-x-2 shrink-0 pl-1 xl:pl-3">
               {!currentUser ? (
                 <>
                   <Link
-                    to="/industry/login"
-                    className="px-3 xl:px-4 py-2 xl:py-2.5 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-sm font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
+                    to="/institution/login"
+                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 border border-[#063028]/25 text-[#063028] bg-transparent hover:bg-[#edf4f0] text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs flex items-center gap-1.5"
                   >
-                    Register as Industry
+                    <GraduationCap className="w-3.5 h-3.5 text-[#c48825]" />
+                    Institution Portal
                   </Link>
                   <Link
-                    to="/admin/login"
-                    className="px-3.5 xl:px-5 py-2 xl:py-2.5 bg-[#063028] text-white text-xs xl:text-sm font-bold rounded-xl hover:bg-[#04201a] transition-all whitespace-nowrap shadow-xs cursor-pointer"
+                    to="/industry/login"
+                    className="px-2.5 xl:px-3 py-1.5 xl:py-2 border border-stone-800 text-stone-900 bg-transparent hover:bg-stone-50 text-xs xl:text-[13px] font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-2xs"
                   >
-                    CII Admin
+                    Industry Login
                   </Link>
                 </>
               ) : (
                 <Link
-                  to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all border ${
+                  to={
+                    currentUser.role === 'admin' 
+                      ? '/admin/dashboard' 
+                      : currentUser.role === 'institution' 
+                      ? '/institution/dashboard' 
+                      : '/industry/dashboard'
+                  }
+                  className={`px-4 py-2 rounded-xl text-xs xl:text-sm font-bold whitespace-nowrap transition-all border ${
                     location.pathname.includes('/dashboard') 
                       ? 'text-white bg-[#063028] border-[#063028] shadow-xs' 
                       : 'text-[#063028] bg-stone-50 hover:bg-stone-100 border-stone-200'
@@ -313,80 +366,62 @@ export const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             <div className="px-4 pt-3 pb-4 space-y-1 sm:px-6">
               {!currentUser ? (
                 <>
-                  <button
-                    onClick={() => handleNavClick('hero')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'hero' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    Home
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('about-ciisic')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'about-ciisic' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    About CIISIC
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('partner-institutions')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'partner-institutions' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    Institutions
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('our-ecosystem')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'our-ecosystem' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    Our Ecosystem
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('how-it-works')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'how-it-works' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    How It Works
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('get-involved')}
-                    className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer ${
-                      activeSection === 'get-involved' ? 'text-[#063028] bg-[#edf4f0] font-bold' : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
-                    }`}
-                  >
-                    Get Involved
-                  </button>
+                  {navItems.map((item) => {
+                    const active = isNavActive(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNavClick(item.id)}
+                        className={`w-full text-left block px-3 py-2 rounded-md text-base font-medium cursor-pointer transition-colors ${
+                          active
+                            ? 'text-[#063028] bg-[#edf4f0] font-bold'
+                            : 'text-stone-700 hover:bg-stone-50 hover:text-[#063028]'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
 
                   <div className="border-t border-stone-200 my-2 pt-2 space-y-2 px-1">
+                    <Link
+                      to="/institution/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-base font-semibold border border-[#063028]/30 text-[#063028] text-center hover:bg-[#edf4f0] transition-all cursor-pointer"
+                    >
+                      <GraduationCap className="w-4 h-4 text-[#c48825]" />
+                      Institution Portal
+                    </Link>
                     <Link
                       to="/industry/login"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block w-full py-2.5 rounded-lg text-base font-semibold border border-stone-800 text-stone-900 text-center hover:bg-stone-50 transition-all cursor-pointer"
                     >
-                      Register as Industry
-                    </Link>
-                    <Link
-                      to="/admin/login"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block w-full py-2.5 rounded-lg text-base font-semibold bg-[#063028] text-white text-center hover:bg-[#04201a] transition-all cursor-pointer shadow-xs"
-                    >
-                      CII Admin
+                      Industry Login
                     </Link>
                   </div>
                 </>
               ) : (
                 <>
                   <Link
-                    to={currentUser.role === 'admin' ? '/admin/dashboard' : '/industry/dashboard'}
+                    to={
+                      currentUser.role === 'admin' 
+                        ? '/admin/dashboard' 
+                        : currentUser.role === 'institution' 
+                        ? '/institution/dashboard' 
+                        : '/industry/dashboard'
+                    }
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-bold text-[#063028] hover:bg-stone-50"
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/problem-statements"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-base font-bold text-stone-700 hover:bg-stone-50"
+                  >
+                    Problem Statements
                   </Link>
                   {currentUser.role === 'industry' && (
                     <Link

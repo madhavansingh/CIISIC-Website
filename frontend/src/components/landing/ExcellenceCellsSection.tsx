@@ -11,8 +11,21 @@ interface ExcellenceCellData {
   icon: React.ReactNode;
   extended?: {
     vision?: string;
-    offerings?: string[];
+    whoThisIsFor?: string[];
+    problemsWeHelpSolve?: string[];
+    howWeWorkTogether?: {
+      flow: string;
+      description: string;
+    };
+    whatYouWalkAwayWith?: string[];
+    whyPartnerTitle?: string;
     whyPartner?: string[];
+    structuredOfferings?: {
+      icon: string;
+      title: string;
+      description: string;
+    }[];
+    offerings?: string[];
   };
 }
 
@@ -49,25 +62,43 @@ export const ExcellenceCellsSection: React.FC = () => {
     },
     {
       id: 'ai-in-business',
-      name: "AI in Business",
-      partner: "Oriental Group of Institutes",
+      name: "AI in Business Excellence Cell",
+      partner: "Oriental Group of Institutes (OGI)",
       image: "/images/4_ai_in_business.jpg",
       brief: "Helping organizations adopt Artificial Intelligence through practical use cases, analytics, automation, and AI-driven business transformation.",
-      details: "The AI in Business Excellence Cell, led by Oriental Group of Institutes (OGI) in collaboration with CII Industry Academia Excellence Cell, serves as a trusted academic partner for industries embarking on their AI transformation journey. The cell helps organizations identify opportunities, validate AI solutions, and build the capabilities needed for successful and responsible AI adoption.",
+      details: "The AI in Business Excellence Cell, run by Oriental Group of Institutes in collaboration with the CII Industry Academia Excellence Cell, exists to give organizations a dependable starting point for AI adoption, one built on evidence and experimentation rather than sales pitches. We help companies figure out where AI genuinely fits, test it before committing real budget, and build the internal skills needed to sustain it once the pilot is over.",
       icon: <Brain className="h-5 w-5 text-purple-600" />,
       extended: {
-        vision: "To bridge the gap between industry challenges and Artificial Intelligence by enabling practical innovation, collaborative research, and future-ready talent development.",
-        offerings: [
-          "AI Readiness Assessment: Evaluate organizational readiness and identify high-impact opportunities for AI adoption.",
-          "Proof of Concept Development: Prototype AI solutions in collaboration with faculty and students before making major technology investments.",
-          "Business Analytics & Decision Intelligence: Transform business data into meaningful insights that support smarter and faster decision-making.",
-          "Process Automation: Design AI-powered automation solutions that improve operational efficiency and productivity.",
-          "Industry–Academia Collaboration: Work with OGI's faculty, researchers, and students to solve real-world business challenges through innovation.",
-          "AI Capability Building: Bridge the AI literacy gap through workshops, training programs, and hands-on learning experiences.",
-          "Cost-Effective AI Adoption: Explore AI in a vendor-neutral academic environment, reducing risk before large-scale implementation.",
-          "Innovation & Product Development: Collaborate on live industry projects and develop AI-driven products and practical business solutions.",
-          "Future-Ready Talent: Connect with skilled students equipped with the latest AI knowledge and practical experience."
+        vision: "To close the gap between real industry problems and what AI can practically solve, through hands-on innovation, honest research collaboration, and talent that's genuinely ready for the workplace.",
+        whoThisIsFor: [
+          "Startups and early-stage ventures exploring their first AI use case",
+          "MSMEs looking for affordable, low-risk ways to automate or analyze",
+          "Corporates validating AI investments before scaling",
+          "Educational institutions building AI programs or research partnerships",
+          "Government bodies and industry associations exploring digital transformation"
         ],
+        problemsWeHelpSolve: [
+          "Manual, repetitive processes eating up team time",
+          "Large volumes of documents or unstructured data with no easy way to use them",
+          "Customer support that doesn't scale",
+          "Reporting and decision-making that relies on gut feel over data",
+          "Forecasting, demand planning, and business intelligence gaps",
+          "Uncertainty about where to even start with AI"
+        ],
+        howWeWorkTogether: {
+          flow: "Discover → Assess → Prototype → Validate → Deploy → Scale",
+          description: "We start by understanding your actual problem, assess where AI can realistically help, build a working prototype, test it against your data, support deployment, and help you scale what works. No step is skipped, and nothing gets built before it's been validated."
+        },
+        whatYouWalkAwayWith: [
+          "An AI opportunity report specific to your business",
+          "A practical, sequenced AI adoption roadmap",
+          "A working proof-of-concept, not just a slide deck",
+          "A tested prototype ready for real use",
+          "Hands-on training for your team",
+          "Ongoing access to student and faculty collaboration",
+          "Research support and, where needed, deployment help"
+        ],
+        whyPartnerTitle: "Why an Academic AI Partner",
         whyPartner: [
           "Trusted academic partner for AI transformation",
           "Vendor-neutral guidance and expert consultation",
@@ -75,6 +106,43 @@ export const ExcellenceCellsSection: React.FC = () => {
           "Low-risk experimentation with AI solutions",
           "Access to future-ready talent and research capabilities",
           "Strong Industry–Academia collaboration through CII"
+        ],
+        structuredOfferings: [
+          {
+            icon: "🎓",
+            title: "AI Education & Capability Building",
+            description: "From foundational AI/ML and Generative AI workshops to prompt engineering training and hands-on bootcamps, we help faculty, students, and working professionals build real skills, not just certificates. This includes Faculty Development Programs and AI awareness sessions for leadership teams who need the big picture before making decisions."
+          },
+          {
+            icon: "🛠️",
+            title: "AI Projects & Prototyping",
+            description: "We build working AI systems, not just proposals, including proof-of-concepts, computer vision solutions, NLP tools, recommendation engines, predictive models, and dashboards, often through live student-industry projects that give both sides something real to show for it."
+          },
+          {
+            icon: "🤖",
+            title: "Generative AI & Automation",
+            description: "This is where a lot of near-term value sits: chatbots, RAG-based knowledge assistants, AI agents, document Q&A systems, and workflow automation that takes repetitive work off your team's plate, whether that's customer support, internal knowledge lookup, or content generation."
+          },
+          {
+            icon: "📊",
+            title: "Data & Business Intelligence",
+            description: "We turn scattered data into decisions through business analytics, forecasting, decision-intelligence dashboards, and process-improvement work grounded in what your numbers are actually telling you."
+          },
+          {
+            icon: "🏢",
+            title: "AI Transformation for Organizations",
+            description: "Before recommending any tool, we assess readiness, identify realistic use cases, and build a vendor-neutral adoption roadmap, including responsible AI guidance, so growth doesn't outpace governance."
+          },
+          {
+            icon: "🔬",
+            title: "Research & Innovation",
+            description: "Applied AI research, hackathons, innovation challenges, and faculty-student collaboration aimed at solving real problems, with support extended to startups building their own AI-driven products."
+          },
+          {
+            icon: "👨‍💻",
+            title: "Talent & Industry Connect",
+            description: "Internships, mentorships, industry expert sessions, and placement-oriented training that connect capable students directly with the organizations that need them, plus project showcases that double as a live talent pipeline."
+          }
         ]
       }
     },
@@ -252,8 +320,104 @@ export const ExcellenceCellsSection: React.FC = () => {
                         </div>
                       )}
 
-                      {selectedCell.extended.offerings && (
-                        <div className="space-y-4">
+                      {/* Who This Is For */}
+                      {selectedCell.extended.whoThisIsFor && (
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">Who This Is For</h4>
+                          <ul className="space-y-2.5">
+                            {selectedCell.extended.whoThisIsFor.map((item, idx) => (
+                              <li key={idx} className="flex gap-2.5 items-start">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#063028] mt-2 shrink-0" />
+                                <span className="text-sm sm:text-base text-stone-700 leading-relaxed">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Problems We Help Solve */}
+                      {selectedCell.extended.problemsWeHelpSolve && (
+                        <div className="space-y-3 pt-4 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">Problems We Help Solve</h4>
+                          <ul className="space-y-2.5">
+                            {selectedCell.extended.problemsWeHelpSolve.map((item, idx) => (
+                              <li key={idx} className="flex gap-2.5 items-start">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#c48825] mt-2 shrink-0" />
+                                <span className="text-sm sm:text-base text-stone-700 leading-relaxed">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* How We Work Together */}
+                      {selectedCell.extended.howWeWorkTogether && (
+                        <div className="space-y-3 pt-4 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">How We Work Together</h4>
+                          <div className="bg-[#edf4f0] text-[#063028] px-4 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold inline-block">
+                            {selectedCell.extended.howWeWorkTogether.flow}
+                          </div>
+                          <p className="text-sm sm:text-base text-stone-700 leading-relaxed">
+                            {selectedCell.extended.howWeWorkTogether.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* What You Walk Away With */}
+                      {selectedCell.extended.whatYouWalkAwayWith && (
+                        <div className="space-y-3 pt-4 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">What You Walk Away With</h4>
+                          <ul className="space-y-2.5">
+                            {selectedCell.extended.whatYouWalkAwayWith.map((item, idx) => (
+                              <li key={idx} className="flex gap-2.5 items-start">
+                                <CheckCircle2 className="h-5 w-5 text-[#063028] shrink-0 mt-0.5" />
+                                <span className="text-sm sm:text-base text-stone-700 font-medium leading-relaxed">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Why an Academic AI Partner / Why Partner */}
+                      {selectedCell.extended.whyPartner && (
+                        <div className="space-y-3 pt-4 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">
+                            {selectedCell.extended.whyPartnerTitle || 'Why Partner with Us?'}
+                          </h4>
+                          <ul className="space-y-2.5">
+                            {selectedCell.extended.whyPartner.map((item, idx) => (
+                              <li key={idx} className="flex gap-2.5 items-start">
+                                <CheckCircle2 className="h-5 w-5 text-[#063028] shrink-0 mt-0.5" />
+                                <span className="text-sm sm:text-base text-stone-700 font-medium leading-normal">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* What We Offer - Structured with icons */}
+                      {selectedCell.extended.structuredOfferings && (
+                        <div className="space-y-4 pt-4 border-t border-stone-100">
+                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">What We Offer</h4>
+                          <div className="space-y-4">
+                            {selectedCell.extended.structuredOfferings.map((offering, idx) => (
+                              <div key={idx} className="bg-[#faf7f0] border border-stone-200/80 p-4 rounded-xl space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-lg">{offering.icon}</span>
+                                  <h5 className="font-bold text-[#063028] text-sm sm:text-base">{offering.title}</h5>
+                                </div>
+                                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed pl-7">
+                                  {offering.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Fallback legacy offerings if any */}
+                      {selectedCell.extended.offerings && !selectedCell.extended.structuredOfferings && (
+                        <div className="space-y-4 pt-4 border-t border-stone-100">
                           <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">What We Offer</h4>
                           <div className="grid grid-cols-1 gap-3">
                             {selectedCell.extended.offerings.map((offering, idx) => {
@@ -271,20 +435,6 @@ export const ExcellenceCellsSection: React.FC = () => {
                               );
                             })}
                           </div>
-                        </div>
-                      )}
-
-                      {selectedCell.extended.whyPartner && (
-                        <div className="space-y-4 pt-6 border-t border-stone-100">
-                          <h4 className="text-sm font-bold text-stone-600 uppercase tracking-wider">Why Partner with OGI?</h4>
-                          <ul className="grid grid-cols-1 gap-3 pl-1">
-                            {selectedCell.extended.whyPartner.map((item, idx) => (
-                              <li key={idx} className="flex gap-2.5 items-start">
-                                <CheckCircle2 className="h-5 w-5 text-[#063028] shrink-0 mt-0.5" />
-                                <span className="text-sm sm:text-base text-stone-700 font-medium leading-normal">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
                         </div>
                       )}
                     </div>

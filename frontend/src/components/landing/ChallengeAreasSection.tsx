@@ -19,7 +19,8 @@ export const ChallengeAreasSection: React.FC = () => {
   ];
 
   return (
-    <section id="challenge-areas" className="py-24 bg-[#faf8f4] border-t border-[#e8e4dc] scroll-mt-20">
+    <section id="problem-statements" className="py-24 bg-[#faf8f4] border-t border-[#e8e4dc] scroll-mt-20 relative">
+      <div id="challenge-areas" className="absolute -top-20" aria-hidden="true" />
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:px-12 space-y-20">
         
         {/* Main Section: Domains Grid + Flyer Poster split layout */}
@@ -51,13 +52,19 @@ export const ChallengeAreasSection: React.FC = () => {
               ))}
             </div>
 
-            {/* CTA Submit Button */}
-            <div className="pt-2">
+            {/* CTA Buttons */}
+            <div className="pt-2 flex flex-wrap gap-4 items-center">
               <Link
-                to="/industry/login"
+                to="/problem-statements"
                 className="inline-flex items-center gap-2 px-6 py-4 rounded-xl text-base font-bold text-white bg-[#063028] hover:bg-[#04201a] shadow-xs transition-all duration-200"
               >
-                Submit Your Industry Challenge <ArrowRight className="h-4.5 w-4.5" />
+                Browse Problem Statements <ArrowRight className="h-4.5 w-4.5" />
+              </Link>
+              <Link
+                to="/industry/login"
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-xl text-base font-bold text-[#063028] bg-white border border-[#063028]/20 hover:bg-stone-50 shadow-2xs transition-all duration-200"
+              >
+                Submit Your Industry Challenge
               </Link>
             </div>
           </div>
